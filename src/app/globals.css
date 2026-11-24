@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #1e1e2e;
+  --color-ink-soft: #55546b;
+  --color-paper: #f6f6fb;
+  --color-line: #e3e2f0;
+  --color-indigo: #6563f1;
+  --color-indigo-ink: #4846d2;
+  --color-indigo-wash: #ecebfe;
+  --color-night: #24226e;
+  --color-honey: #ffc329;
+  --color-honey-wash: #fff4d6;
+  --color-honey-ink: #6b4d00;
+  --color-alert: #c8133f;
+  --color-leaf: #1f8a5b;
+
+  --font-display: var(--font-anek), "Hind Siliguri", system-ui, sans-serif;
+  --font-sans: var(--font-hind), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-indigo);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Headline: Anek's width axis is used as the expressive element */
+.display {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 112;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+/* Rotating verb in the hero */
+@keyframes verb-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.verb-in {
+  animation: verb-in 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Gentle drift for pinned posters */
+@keyframes drift {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+.drift {
+  animation: drift 7s ease-in-out infinite;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .verb-in,
+  .drift {
+    animation: none;
+  }
+}
