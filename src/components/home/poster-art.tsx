@@ -63,5 +63,20 @@ export function PosterArt({ shape, ink }: Pick<Contest["poster"], "shape" | "ink
           <circle cx="60" cy="18" r="6" {...common} />
         </svg>
       );
+    case "code":
+      return (
+        <svg viewBox="0 0 120 80" aria-hidden className="h-full w-full">
+          <path d="M36 20 L14 40 L36 60 M84 20 L106 40 L84 60 M68 12 L52 68" {...common} />
+        </svg>
+      );
+    case "play":
+      return (
+        <svg viewBox="0 0 120 80" aria-hidden className="h-full w-full">
+          <path d="M30 22 H90 Q108 22 110 44 L112 58 Q113 70 102 70 Q94 70 88 60 L84 54 H36 L32 60 Q26 70 18 70 Q7 70 8 58 L10 44 Q12 22 30 22 Z" {...common} />
+          <path d="M34 36 V50 M27 43 H41" {...common} />
+          <circle cx="80" cy="38" r="3.5" fill={ink} />
+          <circle cx="90" cy="48" r="3.5" fill={ink} />
+        </svg>
+      );
   }
 }

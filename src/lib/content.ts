@@ -47,7 +47,7 @@ export type Contest = {
   /** for upcoming contests: days until entries open */
   startsIn?: number;
   beginner?: boolean;
-  poster: { bg: string; ink: string; shape: "sun" | "wave" | "leaf" | "atom" | "mic" | "pen" | "ball" };
+  poster: { bg: string; ink: string; shape: "sun" | "wave" | "leaf" | "atom" | "mic" | "pen" | "ball" | "code" | "play" };
 };
 
 // Sample data for the prototype. Replace with live contests from the API.
