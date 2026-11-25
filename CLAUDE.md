@@ -14,6 +14,13 @@ Beejoyi (বিজয়ী) is Bangladesh's contest platform for students from 
 - **Fees:** mixed free and paid; bKash, Nagad or card.
 - **Games:** casual, no sign-up, weekly leaderboard.
 - **Contest formats:** every contest is one of quiz, photo, video, audio or debate (`Contest.format`). The format drives rules (`formatGuides`), uploads (`uploadRules`) and how winners show; debate winners are teams.
+- **Product model (from the founder's UX blueprint, see PRODUCT.md):**
+  - Contests can run over several rounds (`Contest.round`): inquiry, then feedback and improvement, then the finale.
+  - Judging uses a published 1–7 rubric per criterion, scored blind and never by votes.
+  - Every finisher gets a Skill Scorecard.
+  - Free contests name their CSR sponsor (`Contest.sponsor`).
+  - Submissions start with a 3-minute learning card and guided prompts, never a blank box.
+- **Icons:** drawn SVGs from `src/components/icons.tsx`, never emoji.
 - **Brand:** keep the logo and colours (indigo `#6563F1`, honey `#FFC329`). Honey is for rewards only, crimson only for deadlines.
 - **Stats and contest data are samples**, marked "(নমুনা)" on screen until the founder sends verified numbers.
 - One label = one action. "ফ্রি সাইন আপ" = create an account; "যোগ দাও" = join a contest.

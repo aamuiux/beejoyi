@@ -182,7 +182,7 @@ export function ContestsBrowser() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={tr(t.list.searchPh)}
-            className="min-h-13 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-ink-soft/70"
+            className="min-h-13 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-ink-soft"
           />
         </div>
       </div>
@@ -255,9 +255,10 @@ export function ContestsBrowser() {
                   className="flex flex-wrap items-center gap-2 py-5"
                   aria-live="polite"
                 >
-                  <p className="mr-2 font-display text-xl font-semibold">
+                  {/* The count doubles as the list heading, so cards' h3s don't skip a level */}
+                  <h2 className="mr-2 font-display text-xl font-semibold">
                     {countLabel}
-                  </p>
+                  </h2>
                   <ActivePills
                     f={f}
                     set={set}

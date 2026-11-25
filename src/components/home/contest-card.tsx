@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { JoinDialog, joinLabel } from "@/components/contests/join-dialog";
-import { ages, formats, num, statusOf, t, type Contest } from "@/lib/content";
+import { FormatIcon, HandshakeIcon, TrophyIcon } from "@/components/icons";
+import { ages, detail, formats, num, statusOf, t, type Contest } from "@/lib/content";
 import { useHome } from "@/lib/home-state";
 import { PosterArt } from "./poster-art";
 
@@ -33,9 +34,17 @@ export function ContestCard({ c }: { c: Contest }) {
           {c.fee === 0 ? tr(t.contests.free) : `৳${num(c.fee, lang)}`}
         </span>
         {/* How you take part, so nobody joins a video contest expecting a quiz */}
-        <span className="absolute bottom-3 left-3 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-semibold text-ink">
-          <span aria-hidden>{formats[c.format].icon} </span>
-          {tr(formats[c.format].label)}
+        <span className="absolute bottom-3 left-3 flex flex-wrap gap-1.5">
+          <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-semibold text-ink">
+            <FormatIcon format={c.format} className="size-3.5" />
+            {tr(formats[c.format].label)}
+          </span>
+          {/* Multi-round contests say so up front: it's a journey, not a one-off upload */}
+          {c.round && (
+            <span className="rounded-full bg-indigo px-2.5 py-0.5 text-xs font-semibold text-white ring-2 ring-white/90">
+              {tr(detail.roundOf).replace("{now}", num(c.round.now, lang)).replace("{of}", num(c.round.of, lang))}
+            </span>
+          )}
         </span>
       </div>
 
@@ -52,10 +61,19 @@ export function ContestCard({ c }: { c: Contest }) {
             {tr(c.title)}
           </Link>
         </h3>
-        <p className="text-sm font-medium text-honey-ink">
-          <span aria-hidden>🏆 </span>
+        <p className="flex items-start gap-1.5 text-sm font-medium text-honey-ink">
+          <TrophyIcon className="mt-0.5 size-4 shrink-0" />
           {tr(c.prize)}
         </p>
+        {/* Free because a sponsor pays: say who, so "free" doesn't read like a catch */}
+        {c.sponsor && (
+          <p className="-mt-1 flex items-start gap-1.5 text-sm text-ink-soft">
+            <HandshakeIcon className="mt-0.5 size-4 shrink-0 text-indigo-ink" />
+            <span>
+              {tr(detail.sponsor.by)} <span className="font-medium text-ink">{tr(c.sponsor)}</span>
+            </span>
+          </p>
+        )}
 
         <div className="mt-auto flex flex-col gap-3 border-t border-line pt-3 text-sm">
           {/* Status line: the facts that decide "should I act now?" */}
@@ -80,7 +98,7 @@ export function ContestCard({ c }: { c: Contest }) {
                 <span className="text-ink-soft">
                   {num(c.joined, lang)} {tr(t.list.entries)}
                 </span>
-                <span className="font-semibold text-leaf">{tr(t.list.resultsOut)}</span>
+                <span className="font-semibold text-leaf-ink">{tr(t.list.resultsOut)}</span>
               </>
             )}
           </div>
@@ -100,7 +118,7 @@ export function ContestCard({ c }: { c: Contest }) {
               type="button"
               onClick={() => setReminded(true)}
               aria-pressed={reminded}
-              className="relative z-10 min-h-12 w-full rounded-full border-2 border-indigo px-4 text-base font-semibold text-indigo-ink hover:bg-indigo-wash aria-pressed:border-leaf aria-pressed:text-leaf"
+              className="relative z-10 min-h-12 w-full rounded-full border-2 border-indigo px-4 text-base font-semibold text-indigo-ink hover:bg-indigo-wash aria-pressed:border-leaf aria-pressed:text-leaf-ink"
             >
               {reminded ? `✓ ${tr(t.list.reminded)}` : tr(t.list.remind)}
             </button>
@@ -108,7 +126,7 @@ export function ContestCard({ c }: { c: Contest }) {
           {status === "ended" && (
             <Link
               href={`/contests/${c.id}#winners`}
-              className="relative z-10 flex min-h-12 w-full items-center justify-center rounded-full bg-leaf px-4 text-base font-semibold text-white hover:bg-[#18724A]"
+              className="relative z-10 flex min-h-12 w-full items-center justify-center rounded-full bg-leaf-ink px-4 text-base font-semibold text-white hover:bg-[#10543a]"
             >
               {tr(t.list.seeWinners)}
             </Link>

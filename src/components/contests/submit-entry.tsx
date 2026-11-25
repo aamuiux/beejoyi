@@ -7,12 +7,25 @@ import { ToggleGroup } from "@base-ui/react/toggle-group";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
+  BookIcon,
+  CameraIcon,
+  ClockIcon,
+  DocIcon,
+  FilmIcon,
+  GalleryIcon,
+  HeadphonesIcon,
+  LockIcon,
+  MicIcon,
+  PlayIcon,
+} from "@/components/icons";
+import {
   ages,
   childProfiles,
   contests,
   num,
   statusOf,
   formatGuides,
+  REFLECT,
   submit as s,
   t,
   uploadRules,
@@ -29,6 +42,8 @@ type Item = {
   url: string;
   progress: number;
   status: "uploading" | "done" | "failed";
+  /** size before it was shrunk on the phone, if it was */
+  origMB?: number;
 };
 type Draft = {
   who: string;
@@ -38,6 +53,12 @@ type Draft = {
   own: boolean;
   rules: boolean;
   consent: boolean;
+  /** finished the 3-minute learning card (progressive disclosure gate) */
+  learned: boolean;
+  /** the three guided process prompts */
+  notes: [string, string, string];
+  /** round 2+ reflection log: which feedback was applied */
+  reflect: string;
 };
 type Entry = {
   receipt: string;
@@ -51,6 +72,36 @@ const fill = (str: string, vars: Record<string, string>) =>
   str.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
 const countWords = (txt: string) =>
   txt.trim().split(/\s+/).filter(Boolean).length;
+const sizeLabel = (mb: number, lang: Lang) =>
+  mb < 1
+    ? `${num(Math.max(1, Math.round(mb * 1024)), lang)} KB`
+    : `${num(mb.toFixed(1), lang)} MB`;
+
+/**
+ * Shrink big photos on the phone before upload (blueprint: low-bandwidth).
+ * Long side 2000 px, JPEG 82%. Falls back to the original on any failure.
+ */
+async function shrink(f: File): Promise<File> {
+  if (!f.type.startsWith("image/") || f.size < 1.5 * 1024 * 1024) return f;
+  try {
+    const bmp = await createImageBitmap(f);
+    const scale = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bmp.width * scale);
+    canvas.height = Math.round(bmp.height * scale);
+    canvas.getContext("2d")?.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((r) =>
+      canvas.toBlob(r, "image/jpeg", 0.82),
+    );
+    if (!blob || blob.size >= f.size) return f;
+    return new File([blob], f.name.replace(/\.\w+$/, "") + ".jpg", {
+      type: "image/jpeg",
+    });
+  } catch {
+    return f;
+  }
+}
+
 const accepts = (accept: string, type: string) =>
   accept
     .split(",")
@@ -64,6 +115,10 @@ export function SubmitEntry({ id }: { id: string }) {
   const rule = uploadRules[c.format];
   const guide = formatGuides[c.format];
   const eligible = childProfiles.filter((p) => c.ages.includes(p.age));
+  // Round 2 and the finale ask what feedback you used (process capture; deters AI copy-paste)
+  const needsReflect = !!c.round && c.round.now >= 2;
+  const forKids = c.ages.some((a) => a === "pre" || a === "p1");
+  const workRef = useRef<HTMLDivElement>(null);
 
   const [draft, setDraft] = useState<Draft>({
     who: eligible[0]?.id ?? "",
@@ -73,6 +128,9 @@ export function SubmitEntry({ id }: { id: string }) {
     own: false,
     rules: false,
     consent: false,
+    learned: false,
+    notes: ["", "", ""],
+    reflect: "",
   });
   const [items, setItems] = useState<Item[]>([]);
   const [error, setError] = useState("");
@@ -138,7 +196,7 @@ export function SubmitEntry({ id }: { id: string }) {
     setTimeout(() => clearInterval(tick), 6000);
   };
 
-  const addFiles = (files: FileList | null, replaceId?: string) => {
+  const addFiles = async (files: FileList | null, replaceId?: string) => {
     if (!files?.length) return;
     setError("");
     const existing = replaceId
@@ -150,13 +208,15 @@ export function SubmitEntry({ id }: { id: string }) {
       return;
     }
     const added: Item[] = [];
-    for (const f of Array.from(files)) {
-      const sizeMB = f.size / 1024 / 1024;
+    for (const raw of Array.from(files)) {
       // Checked before upload: error prevention, with the fix in plain words.
-      if (!accepts(rule.accept, f.type)) {
+      if (!accepts(rule.accept, raw.type)) {
         setError(fill(tr(s.wrongType), { types: tr(guide.format) }));
         return;
       }
+      // Big photos shrink first, so a 20 MB phone photo still fits (Postel) and saves data.
+      const f = await shrink(raw);
+      const sizeMB = f.size / 1024 / 1024;
       if (sizeMB > rule.maxMB) {
         setError(
           fill(tr(s.tooBig), {
@@ -172,6 +232,7 @@ export function SubmitEntry({ id }: { id: string }) {
         type: f.type,
         sizeMB,
         url: URL.createObjectURL(f),
+        origMB: f === raw ? undefined : raw.size / 1024 / 1024,
         progress: 0,
         status: navigator.onLine ? "uploading" : "failed",
       });
@@ -214,9 +275,18 @@ export function SubmitEntry({ id }: { id: string }) {
         ? tr(s.needs.wait)
         : null;
   const noProfile = eligible.length === 0;
+  const reflectLen = draft.reflect.trim().length;
+  const reflectOk = !needsReflect || (reflectLen >= REFLECT.min && reflectLen <= REFLECT.max);
   const blocker = noProfile
     ? tr(s.needs.profile)
-    : (missing ?? (!draft.own || !draft.rules ? tr(s.needs.checks) : null));
+    : !draft.learned
+      ? tr(s.needs.learn)
+      : (missing ??
+        (!reflectOk
+          ? tr(s.needs.reflect)
+          : !draft.own || !draft.rules
+            ? tr(s.needs.checks)
+            : null));
 
   const person = childProfiles.find((p) => p.id === draft.who);
   const isChild = draft.who !== "me";
@@ -271,13 +341,18 @@ export function SubmitEntry({ id }: { id: string }) {
         <div className="rounded-3xl border border-line bg-white p-6 text-center sm:p-10">
           <div
             aria-hidden
-            className="mx-auto grid size-20 place-items-center rounded-full bg-leaf text-4xl text-white"
+            className="mx-auto grid size-20 place-items-center rounded-full bg-leaf-ink text-4xl text-white"
           >
             ✓
           </div>
           <h2 className="display mt-5 text-4xl font-bold">{tr(s.doneTitle)}</h2>
           <p className="mx-auto mt-3 max-w-md text-ink-soft">
             {tr(s.doneBody)}
+          </p>
+          <p className="mx-auto mt-4 max-w-md rounded-2xl bg-indigo-wash p-4 text-indigo-ink">
+            {c.round
+              ? fill(tr(s.nextRound), { now: num(c.round.now, lang) })
+              : tr(s.feedbackSoon)}
           </p>
 
           <div className="mx-auto mt-8 max-w-sm rounded-2xl border border-line bg-paper p-4 text-left">
@@ -407,8 +482,28 @@ export function SubmitEntry({ id }: { id: string }) {
           )}
         </Step>
 
-        {/* 2. Work */}
-        <Step n={2} title={tr(s.steps.work)}>
+        {/* 2. Learn first: a 3-minute card before creating (progressive disclosure) */}
+        <Step n={2} title={tr(s.learn.title)} done={draft.learned}>
+          <LearnCard
+            points={guide.learn.map((l) => tr(l))}
+            learned={draft.learned}
+            onDone={() => {
+              set({ learned: true });
+              setTimeout(() => workRef.current?.scrollIntoView({ block: "start" }), 50);
+            }}
+          />
+        </Step>
+
+        {/* 3. Work */}
+        <div ref={workRef} className="scroll-mt-24">
+        <Step n={3} title={tr(s.steps.work)} locked={!draft.learned}>
+          {!draft.learned ? (
+            <p className="flex items-center gap-3 rounded-2xl bg-paper p-4 text-ink-soft">
+              <LockIcon className="size-5 shrink-0" />
+              {tr(s.learn.locked)}
+            </p>
+          ) : (
+          <>
           {rule.kind === "text" && (
             <ToggleGroup
               value={[draft.mode]}
@@ -469,6 +564,19 @@ export function SubmitEntry({ id }: { id: string }) {
             {tr(guide.format)}
           </p>
 
+          {/* Keep the criteria in view while making (recognition over recall) */}
+          <div className="mt-5 rounded-2xl border border-line p-4">
+            <p className="font-semibold">{tr(s.rubricPeek)}</p>
+            <ul className="mt-2 space-y-1.5 text-sm">
+              {guide.rubric.map((r, i) => (
+                <li key={i}>
+                  <span className="font-semibold">{tr(r.name)}:</span>{" "}
+                  <span className="text-ink-soft">{tr(r.top)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <label className="mt-6 block">
             <span className="font-semibold">
               {tr(s.caption)}{" "}
@@ -484,10 +592,87 @@ export function SubmitEntry({ id }: { id: string }) {
               className="mt-2 block min-h-12 w-full max-w-lg rounded-2xl border border-line bg-white px-4 outline-none focus:border-indigo"
             />
           </label>
-        </Step>
 
-        {/* 3. Checks */}
-        <Step n={3} title={tr(s.steps.check)}>
+          {/* No blank page: three guided prompts instead of one empty box */}
+          <fieldset className="mt-8">
+            <legend className="font-display text-xl font-semibold">
+              {tr(s.process.title)}
+            </legend>
+            <p className="mt-1 text-sm text-ink-soft">
+              {tr(s.process.sub)} {forKids && tr(s.process.kidNote)}
+            </p>
+
+            {needsReflect && (
+              <div className="mt-4 rounded-2xl border-2 border-indigo/30 bg-indigo-wash/40 p-4">
+                <label htmlFor="reflect" className="font-semibold">
+                  {fill(tr(s.process.reflectLabel), {
+                    prev: num(c.round!.now - 1, lang),
+                  })}
+                </label>
+                <p id="reflect-note" className="text-sm text-ink-soft">
+                  {tr(s.process.reflectNote)}
+                </p>
+                <textarea
+                  id="reflect"
+                  value={draft.reflect}
+                  onChange={(e) => set({ reflect: e.target.value })}
+                  placeholder={tr(s.process.reflectPh)}
+                  maxLength={REFLECT.max + 40}
+                  rows={4}
+                  aria-describedby="reflect-note reflect-count"
+                  className="mt-2 w-full rounded-xl border border-line bg-white p-3 leading-relaxed outline-none focus:border-indigo"
+                />
+                <p
+                  id="reflect-count"
+                  className={`text-sm tabular-nums ${
+                    reflectLen > REFLECT.max
+                      ? "font-semibold text-alert"
+                      : reflectOk
+                        ? "font-semibold text-leaf-ink"
+                        : "text-ink-soft"
+                  }`}
+                >
+                  {num(reflectLen, lang)} / {num(REFLECT.min, lang)}–{num(REFLECT.max, lang)} {tr(s.process.chars)}
+                </p>
+              </div>
+            )}
+
+            <ol className="mt-4 space-y-4">
+              {s.process.prompts.map((pr, i) => (
+                <li key={i}>
+                  <label htmlFor={`note-${i}`} className="flex gap-2 font-semibold">
+                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-indigo-wash text-sm text-indigo-ink">
+                      {num(i + 1, lang)}
+                    </span>
+                    <span>
+                      {tr(pr.q)}{" "}
+                      <span className="font-normal text-ink-soft">({tr(s.optional)})</span>
+                    </span>
+                  </label>
+                  <textarea
+                    id={`note-${i}`}
+                    value={draft.notes[i]}
+                    onChange={(e) => {
+                      const notes = [...draft.notes] as Draft["notes"];
+                      notes[i] = e.target.value;
+                      set({ notes });
+                    }}
+                    placeholder={tr(pr.ph)}
+                    rows={2}
+                    maxLength={400}
+                    className="mt-1.5 w-full rounded-xl border border-line bg-white p-3 leading-relaxed outline-none focus:border-indigo"
+                  />
+                </li>
+              ))}
+            </ol>
+          </fieldset>
+          </>
+          )}
+        </Step>
+        </div>
+
+        {/* 4. Checks */}
+        <Step n={4} title={tr(s.steps.check)}>
           <div className="space-y-4">
             <Check
               checked={draft.own}
@@ -530,7 +715,7 @@ export function SubmitEntry({ id }: { id: string }) {
               {blocker ? (
                 <span className="text-ink-soft">{blocker}</span>
               ) : (
-                <span className="font-semibold text-leaf">✓ {tr(s.ready)}</span>
+                <span className="font-semibold text-leaf-ink">✓ {tr(s.ready)}</span>
               )}
               {savedAt > 0 && (
                 <span className="block text-xs text-ink-soft">
@@ -583,7 +768,7 @@ function Shell({
           <span
             className={`ml-2 whitespace-nowrap text-base ${urgent ? "font-semibold text-alert" : "text-ink-soft"}`}
           >
-            ⏳{" "}
+            <ClockIcon className="mr-1 inline size-4 align-[-2px]" />
             {c.daysLeft <= 1
               ? tr(t.contests.lastDay)
               : `${num(c.daysLeft, lang)} ${tr(t.contests.daysLeft)}`}
@@ -614,18 +799,30 @@ function Notice({ title, body }: { title: string; body?: string }) {
 function Step({
   n,
   title,
+  done,
+  locked,
   children,
 }: {
   n: number;
   title: string;
+  done?: boolean;
+  locked?: boolean;
   children: React.ReactNode;
 }) {
   const { lang } = useHome();
   return (
-    <section className="rounded-3xl border border-line bg-white p-5 sm:p-7">
-      <h2 className="mb-4 flex items-center gap-3 font-display text-2xl font-semibold">
-        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-indigo text-lg text-white">
-          {num(n, lang)}
+    <section
+      className={`rounded-3xl border p-5 sm:p-7 ${locked ? "border-dashed border-line bg-white/60" : "border-line bg-white"}`}
+    >
+      <h2
+        className={`mb-4 flex items-center gap-3 font-display text-2xl font-semibold ${locked ? "text-ink-soft" : ""}`}
+      >
+        <span
+          className={`grid size-9 shrink-0 place-items-center rounded-full text-lg ${
+            done ? "bg-leaf-ink text-white" : locked ? "border-2 border-line" : "bg-indigo text-white"
+          }`}
+        >
+          {done ? "✓" : num(n, lang)}
         </span>
         {title}
       </h2>
@@ -685,12 +882,12 @@ function WordMeter({ words, lang }: { words: number; lang: Lang }) {
           style={{ left: `${(WORDS.min / WORDS.max) * 100}%`, right: 0 }}
         />
         <div
-          className={`relative h-full rounded-full transition-all ${over ? "bg-alert" : ok ? "bg-leaf" : "bg-indigo"}`}
+          className={`relative h-full rounded-full transition-all ${over ? "bg-alert" : ok ? "bg-leaf-ink" : "bg-indigo"}`}
           style={{ width: `${pct}%` }}
         />
       </div>
       <p
-        className={`mt-1.5 text-sm ${over ? "font-semibold text-alert" : ok ? "font-semibold text-leaf" : "text-ink-soft"}`}
+        className={`mt-1.5 text-sm ${over ? "font-semibold text-alert" : ok ? "font-semibold text-leaf-ink" : "text-ink-soft"}`}
       >
         {num(words, lang)} {tr(s.words)}{lang === "bn" ? "।" : "."} {tr(s.wordRange)}
       </p>
@@ -711,7 +908,7 @@ function Uploader({
   accept: string;
   items: Item[];
   maxFiles: number;
-  onAdd: (f: FileList | null, replaceId?: string) => void;
+  onAdd: (f: FileList | null, replaceId?: string) => void | Promise<void>;
   onRemove: (id: string) => void;
   onRetry: (id: string) => void;
 }) {
@@ -725,15 +922,15 @@ function Uploader({
   const buttons =
     kind === "image"
       ? [
-          { label: tr(s.camera), icon: "📷", input: "camera" as const },
-          { label: tr(s.gallery), icon: "🖼️", input: "picker" as const },
+          { label: tr(s.camera), icon: <CameraIcon className="size-8" />, input: "camera" as const },
+          { label: tr(s.gallery), icon: <GalleryIcon className="size-8" />, input: "picker" as const },
         ]
       : kind === "media"
         ? [
             {
               // Name the one thing this contest takes (video or audio).
               label: accept.startsWith("audio") ? tr(s.audio) : tr(s.video),
-              icon: accept.startsWith("audio") ? "🎙️" : "🎬",
+              icon: accept.startsWith("audio") ? <MicIcon className="size-8" /> : <FilmIcon className="size-8" />,
               input: "picker" as const,
             },
           ]
@@ -741,11 +938,11 @@ function Uploader({
           ? [
               {
                 label: `${tr(s.pdf)} / ${tr(s.video)}`,
-                icon: "📄",
+                icon: <DocIcon className="size-8" />,
                 input: "picker" as const,
               },
             ]
-          : [{ label: tr(s.uploadMode), icon: "📄", input: "picker" as const }];
+          : [{ label: tr(s.uploadMode), icon: <DocIcon className="size-8" />, input: "picker" as const }];
 
   return (
     <div>
@@ -828,15 +1025,23 @@ function Uploader({
                     </div>
                   )}
                   {it.status === "done" && (
-                    <p className="text-sm font-semibold text-leaf">
-                      ✓ {tr(s.uploaded)},{" "}
-                      {it.sizeMB < 1
-                        ? `${num(Math.max(1, Math.round(it.sizeMB * 1024)), lang)} KB`
-                        : `${num(it.sizeMB.toFixed(1), lang)} MB`}
+                    <p className="text-sm font-semibold text-leaf-ink">
+                      ✓ {tr(s.uploaded)}, {sizeLabel(it.sizeMB, lang)}
+                    </p>
+                  )}
+                  {it.origMB && (
+                    <p className="text-xs text-ink-soft">
+                      {fill(tr(s.compressed), {
+                        from: sizeLabel(it.origMB, lang),
+                        to: sizeLabel(it.sizeMB, lang),
+                      })}
                     </p>
                   )}
                   {it.status === "failed" && (
                     <p className="text-sm text-alert">{tr(s.failed)}</p>
+                  )}
+                  {it.status === "uploading" && (
+                    <p className="mt-1 text-xs text-ink-soft">{tr(s.resumable)}</p>
                   )}
                 </div>
                 <div className="flex gap-2">
@@ -886,14 +1091,123 @@ function Uploader({
               }
               className="flex min-h-28 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-indigo/40 bg-indigo-wash/50 p-4 font-semibold text-indigo-ink hover:border-indigo hover:bg-indigo-wash"
             >
-              <span aria-hidden className="text-3xl">
-                {b.icon}
-              </span>
+              {b.icon}
               {items.length > 0 ? tr(s.addMore) : b.label}
             </button>
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+/** The 3-minute learning card. Text is always there; video and audio are light, optional extras. */
+function LearnCard({
+  points,
+  learned,
+  onDone,
+}: {
+  points: string[];
+  learned: boolean;
+  onDone: () => void;
+}) {
+  const { tr, lang } = useHome();
+  const [mode, setMode] = useState<"read" | "watch" | "listen">("read");
+  const [open, setOpen] = useState(false);
+
+  if (learned && !open) {
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="font-semibold text-leaf-ink">✓ {tr(s.learn.doneState)}</p>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="min-h-11 rounded-full border border-line px-4 font-semibold hover:border-ink/40"
+        >
+          {tr(s.learn.again)}
+        </button>
+      </div>
+    );
+  }
+
+  const modes = [
+    { k: "read" as const, label: tr(s.learn.read), icon: <BookIcon className="size-4" /> },
+    { k: "watch" as const, label: tr(s.learn.watch), size: tr(s.learn.watchSize), icon: <PlayIcon className="size-4" /> },
+    { k: "listen" as const, label: tr(s.learn.listen), size: tr(s.learn.listenSize), icon: <HeadphonesIcon className="size-4" /> },
+  ];
+
+  return (
+    <div>
+      <p className="text-ink-soft">{tr(s.learn.sub)}</p>
+      <ToggleGroup
+        value={[mode]}
+        onValueChange={(v) => v[0] && setMode(v[0] as typeof mode)}
+        className="mt-4 flex flex-wrap gap-2"
+      >
+        {modes.map((m) => (
+          <Toggle
+            key={m.k}
+            value={m.k}
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-4 font-semibold text-ink-soft data-[pressed]:border-indigo data-[pressed]:bg-indigo-wash data-[pressed]:text-indigo-ink"
+          >
+            {m.icon}
+            {m.label}
+            {m.size && <span className="text-xs font-normal">· {m.size}</span>}
+          </Toggle>
+        ))}
+      </ToggleGroup>
+
+      {mode === "watch" && (
+        <div className="mt-4 grid aspect-video max-w-lg place-items-center rounded-2xl bg-navy text-white">
+          <span className="grid size-14 place-items-center rounded-full bg-white/15">
+            <PlayIcon className="size-6" />
+          </span>
+        </div>
+      )}
+      {mode === "listen" && (
+        <div className="mt-4 flex max-w-lg items-center gap-3 rounded-2xl bg-indigo-wash p-3 text-indigo-ink">
+          <span className="grid size-11 shrink-0 place-items-center rounded-full bg-indigo text-white">
+            <PlayIcon className="size-4" />
+          </span>
+          <span aria-hidden className="flex h-8 flex-1 items-center gap-0.5">
+            {[3, 6, 9, 5, 8, 4, 7, 10, 6, 3, 8, 5, 9, 4, 6, 3, 7, 5].map((h, i) => (
+              <span key={i} className="w-1 flex-1 rounded-full bg-indigo/50" style={{ height: `${h * 10}%` }} />
+            ))}
+          </span>
+          <span className="text-sm tabular-nums">{num("3:00", lang)}</span>
+        </div>
+      )}
+      {mode !== "read" && <p className="mt-2 text-xs text-ink-soft">{tr(s.learn.mediaNote)}</p>}
+
+      <ol className="mt-5 space-y-3">
+        {points.map((pt, i) => (
+          <li key={i} className="flex gap-3">
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-honey-wash font-semibold text-honey-ink">
+              {num(i + 1, lang)}
+            </span>
+            <span className="pt-0.5">{pt}</span>
+          </li>
+        ))}
+      </ol>
+
+      <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(false);
+            onDone();
+          }}
+          className="min-h-12 rounded-full bg-indigo px-6 font-semibold text-white hover:bg-indigo-ink"
+        >
+          {tr(s.learn.done)}
+        </button>
+        <Link
+          href="/contests?status=ended"
+          className="min-h-11 content-center font-semibold text-indigo-ink underline underline-offset-4"
+        >
+          {tr(s.learn.examples)}
+        </Link>
+      </div>
     </div>
   );
 }

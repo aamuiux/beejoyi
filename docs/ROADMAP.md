@@ -19,6 +19,13 @@ Since then (26 Nov 2026):
 - **Contest cards:** every card has a full-width action button.
 - **Winners:** they sit side by side and show the winning photo, video or audio.
 - **Homepage:** set in Anek Bangla, with a picture for each step of "কীভাবে কাজ করে".
+- **Blueprint alignment.** We applied the founder's UX blueprint; see [blueprint-alignment.md](blueprint-alignment.md) and [../PRODUCT.md](../PRODUCT.md).
+  - The submit page has a 3-minute learning card first, then three guided prompts, a reflection log in round 2, and photos shrunk on the phone.
+  - Rubrics are scored 1–7, and each criterion says what earns a 7.
+  - Multi-round contests show their rounds and the question they explore.
+  - Every finisher gets a Skill Scorecard.
+  - Free contests name their CSR sponsor.
+  - Emoji icons are replaced with drawn SVG icons.
 
 ## Next, in this order ⏭️
 
@@ -27,8 +34,9 @@ Each step closes a loop the previous pages already point to. Placeholder buttons
 ### 5. Parent dashboard / "My Beejoyi": `/me` ← **start here**
 Why next: "নতুন প্রোফাইল যোগ করো", "পরে জমা দেব" and the mobile tab bar's **Profile** all lead here, and it's where a parent sees value after joining.
 - Child profiles: switch, add, edit (name, class, school).
-- Per child: **joined contests**, each with a status (needs submission ⏳ / submitted ✓ / results out 🏆) and the deadline.
-- Certificates wallet (download / share / verify link).
+- Per child: **joined contests**, each with a status (needs submission ⏳ / submitted ✓ / feedback ready / results out 🏆), the **current round** ("রাউন্ড ২/৩") and the deadline.
+- **Round feedback view:** the 1–7 score per criterion with comments, then "improve for the next round".
+- **Scorecard wallet:** reuse `src/components/contests/scorecard.tsx` (download / share / verify link).
 - Payments and receipts (bKash/Nagad), reminders set.
 - Empty state for a brand-new parent: "প্রথম কনটেস্ট খুঁজুন".
 
@@ -65,6 +73,8 @@ Showcase gallery, About, Impact & investors, FAQ, Contact, 404.
 - [ ] Partner school and brand logos we may show
 - [ ] Final contest categories
 - [ ] Copy the real logo into `/public` (it currently loads from preview.beejoyi.com)
+- [ ] Consented photos of real students (the blueprint asks for photography; the drawn placeholders stay until then)
+- [ ] Real CSR sponsors and which contests they fund (the sponsors are samples)
 
 ## How to resume on a new computer
 1. Install Node.js 20+ and Git.

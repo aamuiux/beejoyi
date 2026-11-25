@@ -124,7 +124,7 @@ export function Hero() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={tr(t.hero.searchPh)}
-            className="min-w-0 flex-1 bg-transparent py-2 text-base outline-none placeholder:text-ink-soft/70"
+            className="min-w-0 flex-1 bg-transparent py-2 text-base outline-none placeholder:text-ink-soft"
           />
           <button type="submit" className="min-h-12 shrink-0 rounded-full bg-ink px-5 font-semibold text-white hover:bg-night">
             {tr(t.hero.searchBtn)}

@@ -99,7 +99,7 @@ export function SubmitArt({ done }: { done: string }) {
   );
 }
 
-/** Step 3: a certificate with the child's name and a medal. */
+/** Step 3: a skill scorecard with the child's name, 1–7 rows and a medal. */
 export function CertificateArt({ name, title }: { name: string; title: string }) {
   return (
     <svg viewBox="0 0 320 240" className="h-full w-full" aria-hidden>
@@ -126,8 +126,12 @@ export function CertificateArt({ name, title }: { name: string; title: string })
           {name}
         </text>
         <path d="M96 140 H224" stroke={INK} strokeWidth="1.5" opacity="0.3" />
-        <rect x="88" y="152" width="144" height="5" rx="2.5" fill="#E3E2F0" />
-        <path d="M76 176 q8 -10 16 0 q8 10 16 -2" stroke={INK} strokeWidth="2" fill="none" opacity="0.6" />
+        {/* three rubric rows on a 1–7 scale: it's a scorecard, not just a certificate */}
+        {[6, 5, 7].map((score, row) =>
+          Array.from({ length: 7 }, (_, n) => (
+            <rect key={`${row}-${n}`} x={72 + n * 17} y={150 + row * 12} width="14" height="6" rx="3" fill={n < score ? INDIGO : "#E3E2F0"} />
+          )),
+        )}
       </g>
       {/* medal */}
       <path d="M232 150 L218 206 L232 198 L242 212 L250 160Z" fill={INDIGO} />

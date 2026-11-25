@@ -36,7 +36,7 @@ export function HowItWorks() {
   // with honey on the last step because it is the reward.
   const panels = ["#DCDBFD", "#CDEBDA", "#FFE3A1"];
   const art = [
-    <JoinArt key="join" cta={tr(t.how.steps[0].t)} />,
+    <JoinArt key="join" cta={tr(t.how.art.join)} />,
     <SubmitArt key="submit" done={tr(t.how.art.uploaded)} />,
     <CertificateArt key="cert" name={tr(t.how.art.name)} title={tr(t.how.art.certificate)} />,
   ];
@@ -264,7 +264,7 @@ export function ParentsSection() {
         <ul className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
           {t.parents.points.map((p, i) => (
             <li key={i} className="flex gap-4">
-              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-leaf/10 text-leaf">
+              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-leaf/10 text-leaf-ink">
                 <svg viewBox="0 0 24 24" className="size-6" aria-hidden>
                   <path d={parentIcons[i]} stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>

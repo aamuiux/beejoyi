@@ -29,12 +29,12 @@ export const cats: { key: CatKey; label: L }[] = [
 
 /** How you take part. Decides the rules, what you upload and how winners are shown. */
 export type Format = "quiz" | "photo" | "video" | "audio" | "debate";
-export const formats: Record<Format, { label: L; icon: string }> = {
-  quiz: { label: { bn: "কুইজ", en: "Quiz" }, icon: "❓" },
-  photo: { label: { bn: "ছবি", en: "Photo" }, icon: "📷" },
-  video: { label: { bn: "ভিডিও", en: "Video" }, icon: "🎬" },
-  audio: { label: { bn: "অডিও", en: "Audio" }, icon: "🎙️" },
-  debate: { label: { bn: "বিতর্ক · দলগত", en: "Debate · teams" }, icon: "🗣️" },
+export const formats: Record<Format, { label: L }> = {
+  quiz: { label: { bn: "কুইজ", en: "Quiz" } },
+  photo: { label: { bn: "ছবি", en: "Photo" } },
+  video: { label: { bn: "ভিডিও", en: "Video" } },
+  audio: { label: { bn: "অডিও", en: "Audio" } },
+  debate: { label: { bn: "বিতর্ক · দলগত", en: "Debate · teams" } },
 };
 
 export type ContestStatus = "open" | "upcoming" | "ended";
@@ -59,6 +59,12 @@ export type Contest = {
   /** for upcoming contests: days until entries open */
   startsIn?: number;
   beginner?: boolean;
+  /** CSR sponsor who pays so the contest is free (co-branded "Powered by X × Beejoyi") */
+  sponsor?: L;
+  /** Multi-round (IB-style) contests: which round is running now, of how many */
+  round?: { now: number; of: number };
+  /** Multi-round contests: the real-world question the whole contest explores */
+  inquiry?: L;
   poster: { bg: string; ink: string; shape: "sun" | "wave" | "leaf" | "atom" | "mic" | "pen" | "ball" | "note" | "play" };
 };
 
@@ -66,6 +72,7 @@ export type Contest = {
 export const contests: Contest[] = [
   {
     id: "c1",
+    sponsor: { bn: "নদী ফুডস (নমুনা)", en: "Nodi Foods (sample)" },
     title: { bn: "শিশু চিত্রাঙ্কন: আমার প্রিয় গ্রাম", en: "Kids' drawing: My favourite village" },
     org: { bn: "বিজয়ী আর্ট ক্লাব", en: "Beejoyi Art Club" },
     orgInitial: "বি",
@@ -95,6 +102,7 @@ export const contests: Contest[] = [
   },
   {
     id: "c3",
+    sponsor: { bn: "সবুজ টেলিকম (নমুনা)", en: "Sabuj Telecom (sample)" },
     title: { bn: "জুনিয়র সায়েন্স কুইজ", en: "Junior science quiz" },
     org: { bn: "বিজ্ঞান বন্ধু ক্লাব (নমুনা)", en: "Science Friends Club (sample)" },
     orgInitial: "বি",
@@ -111,6 +119,8 @@ export const contests: Contest[] = [
   },
   {
     id: "c4",
+    round: { now: 2, of: 3 },
+    inquiry: { bn: "একটা গল্প কীভাবে শ্রোতাকে বৃষ্টির দিনে নিয়ে যায়?", en: "How can a story carry a listener into a rainy day?" },
     title: { bn: "গল্প বলো: একদিন বৃষ্টিতে", en: "Tell a story: One rainy day" },
     org: { bn: "কিশোর কলম (নমুনা)", en: "Kishor Kolom (sample)" },
     orgInitial: "ক",
@@ -125,6 +135,8 @@ export const contests: Contest[] = [
   },
   {
     id: "c5",
+    round: { now: 1, of: 3 },
+    inquiry: { bn: "তোমার স্কুলের কোন একটা সমস্যা ছোট একটা ব্যবসা সমাধান করতে পারে?", en: "Which problem at your school could a small business solve?" },
     title: { bn: "স্কুল স্টার্টআপ আইডিয়া চ্যালেঞ্জ", en: "School startup idea challenge" },
     org: { bn: "তরুণ উদ্যোক্তা ক্লাব (নমুনা)", en: "Young Founders Club (sample)" },
     orgInitial: "ত",
@@ -139,6 +151,7 @@ export const contests: Contest[] = [
   },
   {
     id: "c6",
+    sponsor: { bn: "আলো ব্যাংক (নমুনা)", en: "Alo Bank (sample)" },
     title: { bn: "প্রকৃতির ছবি: পাখি ও ফুল", en: "Nature photo: Birds and flowers" },
     org: { bn: "সবুজ বাংলা ফটো ক্লাব (নমুনা)", en: "Green Bangla Photo Club (sample)" },
     orgInitial: "স",
@@ -214,6 +227,7 @@ export const contests: Contest[] = [
   },
   {
     id: "c11",
+    sponsor: { bn: "সবুজ টেলিকম (নমুনা)", en: "Sabuj Telecom (sample)" },
     title: { bn: "প্রথম বিতর্ক: অনলাইন রাউন্ড", en: "First debate: online round" },
     org: { bn: "যুক্তি বিতর্ক ক্লাব (নমুনা)", en: "Jukti Debate Club (sample)" },
     orgInitial: "যু",
@@ -245,6 +259,8 @@ export const contests: Contest[] = [
   },
   {
     id: "c13",
+    round: { now: 1, of: 3 },
+    inquiry: { bn: "একটা ছোট রোবট কীভাবে তোমার শহরের একটা সমস্যা কমাতে পারে?", en: "How could a small robot ease one problem in your town?" },
     title: { bn: "রোবোটিক্স চ্যালেঞ্জ: স্মার্ট শহর", en: "Robotics challenge: Smart city" },
     org: { bn: "বিজ্ঞান বন্ধু ক্লাব (নমুনা)", en: "Science Friends Club (sample)" },
     orgInitial: "বি",
@@ -261,6 +277,7 @@ export const contests: Contest[] = [
   },
   {
     id: "c14",
+    sponsor: { bn: "আলো ব্যাংক (নমুনা)", en: "Alo Bank (sample)" },
     title: { bn: "মাতৃভাষা দিবস কুইজ", en: "Mother Language Day quiz" },
     org: { bn: "কিশোর কলম (নমুনা)", en: "Kishor Kolom (sample)" },
     orgInitial: "ক",
@@ -306,6 +323,9 @@ export const contests: Contest[] = [
   },
   {
     id: "c17",
+    round: { now: 3, of: 3 },
+    inquiry: { bn: "তোমার এলাকার কোন গল্পটা সবার শোনা দরকার?", en: "Which story from your area does everyone need to hear?" },
+    sponsor: { bn: "সবুজ টেলিকম (নমুনা)", en: "Sabuj Telecom (sample)" },
     title: { bn: "পডকাস্ট চ্যালেঞ্জ: আমার এলাকার গল্প", en: "Podcast challenge: Stories from my area" },
     org: { bn: "তরুণ কণ্ঠ রেডিও (নমুনা)", en: "Torun Kontho Radio (sample)" },
     orgInitial: "ত",
@@ -448,13 +468,14 @@ export const t = {
     title: { bn: "কীভাবে কাজ করে", en: "How it works" },
     art: {
       uploaded: { bn: "আপলোড হয়েছে", en: "Uploaded" },
-      certificate: { bn: "সার্টিফিকেট", en: "Certificate" },
+      join: { bn: "যোগ দাও", en: "Join" },
+      certificate: { bn: "স্কিল স্কোরকার্ড", en: "Skill Scorecard" },
       name: { bn: "আয়েশা", en: "Ayesha" },
     },
     steps: [
-      { t: { bn: "যোগ দাও", en: "Join" }, d: { bn: "ফ্রি অ্যাকাউন্ট খোলো। ছোটদের প্রোফাইল চালাবেন বাবা-মা।", en: "Create a free account. Parents manage profiles for younger children." } },
-      { t: { bn: "জমা দাও", en: "Submit" }, d: { bn: "ছবি, লেখা, ভিডিও বা অডিও, ফোন থেকেই আপলোড করো।", en: "Upload a drawing, essay, video or audio straight from your phone." } },
-      { t: { bn: "সার্টিফিকেট নাও", en: "Get your certificate" }, d: { bn: "বিচারকরা নম্বর দেবেন। সার্টিফিকেট আর পুরস্কার থাকবে তোমার প্রোফাইলে, সবসময়।", en: "Judges score your entry. Certificates and prizes stay on your profile for good." } },
+      { t: { bn: "যোগ দাও, শিখে নাও", en: "Join and learn" }, d: { bn: "ফোন নম্বর দিয়েই যোগ দাও। শুরুর আগে ৩ মিনিটের একটা শেখার কার্ড, ফাঁকা পাতার ভয় নেই।", en: "Join with just your phone number. A 3-minute learning card comes first, so you never face a blank page." } },
+      { t: { bn: "জমা দাও, ফিডব্যাক নাও", en: "Submit, get feedback" }, d: { bn: "ফোন থেকেই আপলোড করো। বিচারকরা প্রতিটি দিকে ১–৭ নম্বর আর মন্তব্য দেবেন, তুমি আরো ভালো করবে।", en: "Upload from your phone. Judges score each criterion 1–7 with comments, so you can improve." } },
+      { t: { bn: "স্কোরকার্ড নাও", en: "Earn your scorecard" }, d: { bn: "যে শেষ করে, সে-ই পায় যাচাইযোগ্য স্কিল স্কোরকার্ড। জিতলে পুরস্কারও।", en: "Everyone who finishes gets a verified Skill Scorecard. Winners get prizes too." } },
     ],
   },
   games: {
@@ -499,7 +520,7 @@ export const t = {
     inst: {
       t: { bn: "স্কুল, ক্লাব ও শিক্ষকদের জন্য", en: "For schools, clubs and teachers" },
       points: [
-        { bn: "নিয়ম, বিচার ও সার্টিফিকেটের তৈরি টেমপ্লেট", en: "Ready templates for rules, judging and certificates" },
+        { bn: "তৈরি ৩-রাউন্ড টেমপ্লেট আর ১–৭ রুব্রিক লাইব্রেরি", en: "Ready 3-round templates and a 1–7 rubric library" },
         { bn: "জমা, বিচারক আর ফলাফল এক ড্যাশবোর্ডে", en: "Entries, judges and results in one dashboard" },
         { bn: "বিকাশ/নগদে এন্ট্রি ফি সংগ্রহ", en: "Collect entry fees by bKash or Nagad" },
         { bn: "২৪ ঘণ্টার মধ্যে অনুমোদন, শুরু ফ্রিতে", en: "Approved within 24 hours, free to start" },
@@ -511,7 +532,7 @@ export const t = {
       points: [
         { bn: "সারা দেশের যাচাই করা শিক্ষার্থীদের কাছে পৌঁছান", en: "Reach verified students across Bangladesh" },
         { bn: "আপনার নামে কনটেস্ট স্পন্সর করুন", en: "Sponsor a contest under your name" },
-        { bn: "অংশগ্রহণের আসল সংখ্যা ও সিএসআর রিপোর্ট", en: "Real participation numbers and a CSR impact report" },
+        { bn: "জেলাভিত্তিক অংশগ্রহণ আর স্কিল-বৃদ্ধির সিএসআর রিপোর্ট", en: "District reach and skill growth in a CSR impact report" },
       ],
       cta: { bn: "পার্টনার হোন", en: "Become a partner" },
     },
@@ -522,8 +543,9 @@ export const t = {
       { q: { bn: "বিজয়ীতে যোগ দিতে কি টাকা লাগে?", en: "Does it cost anything to join?" }, a: { bn: "অ্যাকাউন্ট খোলা আর গেম খেলা সম্পূর্ণ ফ্রি। বেশিরভাগ কনটেস্ট ফ্রি; কিছু কনটেস্টে ছোট এন্ট্রি ফি থাকে, যা কার্ডেই লেখা থাকে।", en: "Creating an account and playing games is free. Most contests are free; some have a small entry fee, shown on the contest card." } },
       { q: { bn: "কোন বয়সের শিক্ষার্থীরা অংশ নিতে পারে?", en: "What ages can take part?" }, a: { bn: "৩ বছর থেকে এইচএসসি পর্যন্ত। প্রতিটি কনটেস্টে বয়স বা শ্রেণি লেখা থাকে।", en: "From age 3 up to HSC. Every contest shows which ages or classes it is for." } },
       { q: { bn: "আমার সন্তানের তথ্য কি নিরাপদ?", en: "Is my child's information safe?" }, a: { bn: "হ্যাঁ। ছোটদের প্রোফাইল বাবা-মা চালান, আর যোগাযোগের তথ্য কখনো প্রকাশ্যে দেখানো হয় না।", en: "Yes. Parents manage younger children's profiles, and contact details are never shown publicly." } },
-      { q: { bn: "বিজয়ী কীভাবে ঠিক হয়?", en: "How are winners chosen?" }, a: { bn: "প্রতিটি কনটেস্টের নিজস্ব নম্বর দেওয়ার নিয়ম (রুব্রিক) থাকে। বিচারকরা সেই অনুযায়ী নম্বর দেন, কিছু কনটেস্টে ভোটও যোগ হয়।", en: "Each contest has its own scoring guide (rubric). Judges score against it, and some contests add public votes." } },
-      { q: { bn: "সার্টিফিকেট কোথায় পাব?", en: "Where do I get my certificate?" }, a: { bn: "ফলাফল প্রকাশের পর প্রোফাইল থেকে ডাউনলোড করুন। লিংক দিয়ে যে কেউ সার্টিফিকেট যাচাই করতে পারবে।", en: "Download it from your profile once results are out. Anyone can verify it with its link." } },
+      { q: { bn: "বিজয়ী কীভাবে ঠিক হয়?", en: "How are winners chosen?" }, a: { bn: "প্রতিটি কনটেস্টের নম্বর দেওয়ার নিয়ম (রুব্রিক) আগেই প্রকাশ করা থাকে। বিচারকরা প্রতিটি দিকে ১ থেকে ৭ নম্বর দেন, নাম না দেখে। ভোট বা লাইকে কেউ জেতে না।", en: "Each contest publishes its scoring guide (rubric) in advance. Judges score every criterion from 1 to 7 without seeing names. Nobody wins on votes or likes." } },
+      { q: { bn: "না জিতলে কী পাব?", en: "What do I get if I don't win?" }, a: { bn: "যে শেষ করে, সে-ই পায় স্কিল স্কোরকার্ড: প্রতিটি দিকে ১–৭ নম্বর, বিচারকের মন্তব্য আর যাচাই লিংক। কেউ খালি হাতে ফেরে না।", en: "Everyone who finishes gets a Skill Scorecard: a 1–7 score on every criterion, judges' comments and a verify link. Nobody leaves empty-handed." } },
+      { q: { bn: "ফ্রি কনটেস্টের খরচ কে দেয়?", en: "Who pays for free contests?" }, a: { bn: "ব্র্যান্ড আর প্রতিষ্ঠান, তাদের সিএসআর বাজেট থেকে। তাদের নাম কনটেস্টে লেখা থাকে; তোমার কোনো লুকানো খরচ নেই।", en: "Brands and organisations, from their CSR budgets. Their name is shown on the contest, and there are no hidden costs for you." } },
     ],
   },
   final: {
@@ -551,12 +573,19 @@ type SubjectGuide = {
   format: L;
   steps: L[];
   rules: L[];
-  rubric: { name: L; weight: number }[];
+  rubric: { name: L; weight: number; top: L }[];
+  /** The 3-minute learning card shown before you make your entry */
+  learn: L[];
 };
 
 // Per-format defaults. Organisers will be able to edit these in the Studio.
 export const formatGuides: Record<Format, SubjectGuide> = {
   quiz: {
+    learn: [
+      { bn: "৩০টি প্রশ্ন, ২০ মিনিট। ভুল উত্তরে নম্বর কাটে না, তাই সব প্রশ্নের উত্তর দাও।", en: "30 questions in 20 minutes. Wrong answers cost nothing, so answer every one." },
+      { bn: "কঠিন প্রশ্নে আটকে থেকো না; পরে ফিরে আসা যায়।", en: "Don't get stuck on a hard one; you can come back to it." },
+      { bn: "শুরুর আগে ফোনের চার্জ আর ইন্টারনেট দেখে নাও।", en: "Check your battery and internet before you start." },
+    ],
     overview: {
       bn: "নির্দিষ্ট সময়ে অনলাইনে কুইজ দাও, ফোন বা কম্পিউটার যেকোনোটা দিয়ে। প্রশ্ন তোমার শ্রেণির উপযোগী।",
       en: "Take the quiz online at the set time, on a phone or computer. Questions suit your class.",
@@ -573,11 +602,16 @@ export const formatGuides: Record<Format, SubjectGuide> = {
       { bn: "নম্বর সমান হলে যে কম সময়ে শেষ করেছে সে এগিয়ে", en: "On a tie, the faster finish ranks higher" },
     ],
     rubric: [
-      { name: { bn: "সঠিক উত্তর", en: "Correct answers" }, weight: 90 },
-      { name: { bn: "সময় (টাই হলে)", en: "Time (tie-break)" }, weight: 10 },
+      { name: { bn: "সঠিক উত্তর", en: "Correct answers" }, weight: 90, top: { bn: "প্রায় সব প্রশ্নের সঠিক উত্তর", en: "Almost every answer correct" } },
+      { name: { bn: "সময় (টাই হলে)", en: "Time (tie-break)" }, weight: 10, top: { bn: "নির্ধারিত সময়ের অনেক আগে শেষ", en: "Finished well within the time" } },
     ],
   },
   photo: {
+    learn: [
+      { bn: "জানালার পাশে দিনের আলোয় তোলো; ফ্ল্যাশ বন্ধ রাখো।", en: "Shoot by a window in daylight; keep the flash off." },
+      { bn: "আঁকা ছবি হলে ফোন একদম সোজা ওপরে ধরো, যেন কাগজ বাঁকা না দেখায়।", en: "For a drawing, hold the phone straight above so the paper isn't skewed." },
+      { bn: "মূল জিনিসটা মাঝখানে নয়, এক পাশে রাখলে ছবি বেশি জীবন্ত লাগে।", en: "Placing the subject off-centre often makes the photo feel more alive." },
+    ],
     overview: {
       bn: "ছবি তোলো, বা আঁকা ছবির ছবি তোলো, তারপর আপলোড করো। ফোনের ক্যামেরাই যথেষ্ট।",
       en: "Take a photo, or photograph your artwork, then upload it. A phone camera is enough.",
@@ -594,12 +628,17 @@ export const formatGuides: Record<Format, SubjectGuide> = {
       { bn: "সর্বোচ্চ ৩টি ছবি", en: "Up to 3 photos" },
     ],
     rubric: [
-      { name: { bn: "সৃজনশীলতা ও মুহূর্ত", en: "Creativity & moment" }, weight: 40 },
-      { name: { bn: "বিষয়ের সাথে মিল", en: "Fits the theme" }, weight: 30 },
-      { name: { bn: "কম্পোজিশন ও আলো", en: "Composition & light" }, weight: 30 },
+      { name: { bn: "সৃজনশীলতা ও মুহূর্ত", en: "Creativity & moment" }, weight: 40, top: { bn: "এমন মুহূর্ত বা ভাবনা, যা আর কেউ দেখায়নি", en: "A moment or idea nobody else showed" } },
+      { name: { bn: "বিষয়ের সাথে মিল", en: "Fits the theme" }, weight: 30, top: { bn: "বিষয়টা এক দেখাতেই বোঝা যায়", en: "The theme is clear at a glance" } },
+      { name: { bn: "কম্পোজিশন ও আলো", en: "Composition & light" }, weight: 30, top: { bn: "আলো আর ফ্রেম মিলে চোখ ঠিক জায়গায় যায়", en: "Light and framing lead the eye where it should go" } },
     ],
   },
   video: {
+    learn: [
+      { bn: "শুরুতেই এক লাইনে বলো, কী নিয়ে বলবে।", en: "Say in one line, right at the start, what you'll talk about." },
+      { bn: "ফোন আড়াআড়ি ধরো, মুখের সামনে থেকে আলো রাখো।", en: "Hold the phone sideways and keep the light in front of your face." },
+      { bn: "একবার মহড়া দিয়ে সময় মেপে নাও; ৩ মিনিটের মধ্যে থাকো।", en: "Rehearse once and time yourself; stay under 3 minutes." },
+    ],
     overview: {
       bn: "ফোনে ভিডিও রেকর্ড করে জমা দাও: আবৃত্তি, বক্তৃতা, পিচ বা প্রজেক্টের ডেমো।",
       en: "Record a video on your phone and submit it: a recitation, speech, pitch or project demo.",
@@ -616,13 +655,18 @@ export const formatGuides: Record<Format, SubjectGuide> = {
       { bn: "এক টানে রেকর্ড; কাটাছেঁড়া চলবে না", en: "One continuous take, no cuts" },
     ],
     rubric: [
-      { name: { bn: "বিষয়বস্তু", en: "Content" }, weight: 35 },
-      { name: { bn: "ভাব ও উপস্থাপনা", en: "Expression & delivery" }, weight: 35 },
-      { name: { bn: "সাবলীলতা", en: "Fluency" }, weight: 20 },
-      { name: { bn: "সময় মেনে চলা", en: "Timing" }, weight: 10 },
+      { name: { bn: "বিষয়বস্তু", en: "Content" }, weight: 35, top: { bn: "পরিষ্কার ভাবনা, তথ্য বা উদাহরণ দিয়ে পোক্ত", en: "A clear idea, backed by facts or examples" } },
+      { name: { bn: "ভাব ও উপস্থাপনা", en: "Expression & delivery" }, weight: 35, top: { bn: "চোখ, কণ্ঠ আর ভঙ্গি মিলে শ্রোতাকে ধরে রাখে", en: "Eyes, voice and gesture hold the audience" } },
+      { name: { bn: "সাবলীলতা", en: "Fluency" }, weight: 20, top: { bn: "কোথাও আটকায় না, স্বাভাবিক গতি", en: "Never stalls; a natural pace" } },
+      { name: { bn: "সময় মেনে চলা", en: "Timing" }, weight: 10, top: { bn: "সময়ের মধ্যে, তাড়াহুড়ো ছাড়া", en: "Within time, without rushing" } },
     ],
   },
   audio: {
+    learn: [
+      { bn: "কাপড়-ভরা ছোট ঘরে রেকর্ড করো; প্রতিধ্বনি কম হয়।", en: "Record in a small room with soft things around; there's less echo." },
+      { bn: "ফোন মুখ থেকে এক বিঘত দূরে রাখো।", en: "Keep the phone about a hand-span from your mouth." },
+      { bn: "গল্পে একটা শুরু, একটা মোড় আর একটা শেষ রাখো।", en: "Give your story a beginning, a twist and an ending." },
+    ],
     overview: {
       bn: "শুধু কণ্ঠ: ছড়া, গল্প বা পডকাস্ট রেকর্ড করে জমা দাও। ক্যামেরার সামনে আসতে হবে না।",
       en: "Voice only: record a rhyme, story or podcast and submit it. No camera needed.",
@@ -639,13 +683,18 @@ export const formatGuides: Record<Format, SubjectGuide> = {
       { bn: "সময়সীমা ৩ মিনিট", en: "3-minute limit" },
     ],
     rubric: [
-      { name: { bn: "উচ্চারণ", en: "Pronunciation" }, weight: 35 },
-      { name: { bn: "ভাব ও আবেগ", en: "Expression" }, weight: 35 },
-      { name: { bn: "সাবলীলতা", en: "Fluency" }, weight: 20 },
-      { name: { bn: "সময় মেনে চলা", en: "Timing" }, weight: 10 },
+      { name: { bn: "উচ্চারণ", en: "Pronunciation" }, weight: 35, top: { bn: "প্রতিটি শব্দ শুদ্ধ আর স্পষ্ট", en: "Every word correct and clear" } },
+      { name: { bn: "ভাব ও আবেগ", en: "Expression" }, weight: 35, top: { bn: "কণ্ঠেই গল্পের ছবি ফুটে ওঠে", en: "The voice alone paints the story" } },
+      { name: { bn: "সাবলীলতা", en: "Fluency" }, weight: 20, top: { bn: "কোথাও আটকায় না, স্বাভাবিক গতি", en: "Never stalls; a natural pace" } },
+      { name: { bn: "সময় মেনে চলা", en: "Timing" }, weight: 10, top: { bn: "সময়ের মধ্যে, তাড়াহুড়ো ছাড়া", en: "Within time, without rushing" } },
     ],
   },
   debate: {
+    learn: [
+      { bn: "প্রতিটি যুক্তি তিন ধাপে: দাবি, প্রমাণ, উদাহরণ।", en: "Build each argument in three parts: claim, evidence, example." },
+      { bn: "প্রতিপক্ষের সবচেয়ে শক্ত যুক্তিটার জবাব আগে দাও।", en: "Answer the other side's strongest point first." },
+      { bn: "দলে আগেই ঠিক করো কে কোন অংশ বলবে।", en: "Agree in advance who covers which part." },
+    ],
     overview: {
       bn: "৩ জনের দল বানাও, তারপর লাইভ অনলাইন রাউন্ডে অন্য দলের সাথে বিতর্ক করো। জিতলে পুরো দল বিজয়ী।",
       en: "Form a team of 3 and debate other teams in live online rounds. Wins go to the whole team.",
@@ -662,10 +711,10 @@ export const formatGuides: Record<Format, SubjectGuide> = {
       { bn: "প্রতিপক্ষকে সম্মান করে কথা বলতে হবে", en: "Speak respectfully to the other team" },
     ],
     rubric: [
-      { name: { bn: "যুক্তি", en: "Argument" }, weight: 40 },
-      { name: { bn: "খণ্ডন", en: "Rebuttal" }, weight: 30 },
-      { name: { bn: "উপস্থাপনা", en: "Delivery" }, weight: 20 },
-      { name: { bn: "দলের সমন্বয়", en: "Teamwork" }, weight: 10 },
+      { name: { bn: "যুক্তি", en: "Argument" }, weight: 40, top: { bn: "প্রতিটি দাবির পেছনে প্রমাণ আর উদাহরণ", en: "Evidence and an example behind every claim" } },
+      { name: { bn: "খণ্ডন", en: "Rebuttal" }, weight: 30, top: { bn: "প্রতিপক্ষের মূল যুক্তির সরাসরি জবাব", en: "Answers the other side's main point head-on" } },
+      { name: { bn: "উপস্থাপনা", en: "Delivery" }, weight: 20, top: { bn: "আত্মবিশ্বাসী, স্পষ্ট, সম্মান রেখে", en: "Confident, clear and respectful" } },
+      { name: { bn: "দলের সমন্বয়", en: "Teamwork" }, weight: 10, top: { bn: "তিনজনের কথা এক সুতোয় গাঁথা", en: "Three speakers, one connected case" } },
     ],
   },
 };
@@ -695,17 +744,86 @@ export const detail = {
     rules: { bn: "নিয়ম", en: "Rules" },
     judging: { bn: "বিচার", en: "Judging" },
     timeline: { bn: "সময়সূচি", en: "Timeline" },
+    rounds: { bn: "রাউন্ড", en: "Rounds" },
+    scorecard: { bn: "স্কোরকার্ড", en: "Scorecard" },
     faq: { bn: "প্রশ্ন", en: "Questions" },
   },
-  everyone: { bn: "সব অংশগ্রহণকারী পাবে ডিজিটাল সার্টিফিকেট, যা লিংক দিয়ে যাচাই করা যায়।", en: "Every participant gets a digital certificate that can be verified by link." },
+  everyone: { bn: "যে শেষ করে, সে-ই পাবে স্কিল স্কোরকার্ড: প্রতিটি দিকে ১–৭ নম্বর, বিচারকের মন্তব্য আর যাচাই লিংক। কেউ খালি হাতে ফেরে না।", en: "Everyone who finishes gets a Skill Scorecard: a 1–7 score on each criterion, judges' comments and a verify link. Nobody leaves empty-handed." },
+  sponsor: {
+    by: { bn: "সৌজন্যে", en: "Sponsored by" },
+    free: { bn: "ফ্রি, সিএসআর স্পন্সরড", en: "Free, CSR sponsored" },
+    note: { bn: "খরচ দিচ্ছে স্পন্সর; তোমার কোনো লুকানো খরচ নেই।", en: "The sponsor pays; there are no hidden costs for you." },
+  },
+  inquiry: { bn: "যে প্রশ্নের উত্তর খুঁজবে", en: "The question you'll explore" },
+  roundOf: { bn: "রাউন্ড {now}/{of}", en: "Round {now} of {of}" },
+  rounds: [
+    {
+      t: { bn: "অনুসন্ধান", en: "Inquiry" },
+      d: { bn: "সমস্যাটা পড়ো, ৩ মিনিটের শেখার কার্ড দেখো, তারপর প্রথম ভাবনা বা স্কেচ জমা দাও।", en: "Read the problem, take the 3-minute learning card, then submit a first idea or sketch." },
+    },
+    {
+      t: { bn: "ফিডব্যাক ও উন্নতি", en: "Feedback and improve" },
+      d: { bn: "১–৭ নম্বর আর মন্তব্য দেখো, রেকর্ড করা মেন্টর ক্লিনিক যখন খুশি দেখো, কাজ ভালো করো আর লেখো কী বদলালে।", en: "See your 1–7 scores and comments, watch the recorded mentor clinic any time, improve your work and note what you changed." },
+    },
+    {
+      t: { bn: "চূড়ান্ত পর্ব", en: "Finale" },
+      d: { bn: "চূড়ান্ত কাজ জমা দাও। ফাইনালিস্টদের কাজ আর কাজের পেছনের ভাবনা পাশাপাশি দেখানো হবে।", en: "Submit your final work. Finalists' work is shown side by side with their thinking." },
+    },
+  ],
+  roundState: {
+    done: { bn: "শেষ", en: "Done" },
+    now: { bn: "এখন চলছে", en: "Running now" },
+    next: { bn: "সামনে", en: "Coming up" },
+  },
+  clinic: { bn: "মেন্টর ক্লিনিক রেকর্ড করা থাকে: কারেন্ট বা নেট চলে গেলেও পরে দেখা যাবে, লেখা সারাংশও থাকবে।", en: "Mentor clinics are recorded, so you can watch later if the power or internet goes. A text summary comes with each." },
   format: { bn: "জমার ধরন", en: "What to submit" },
-  rubricNote: { bn: "বিচারকরা এই নিয়মে ১০০-তে নম্বর দেবেন", en: "Judges score out of 100 using this guide" },
+  rubricNote: {
+    bn: "বিচারকরা প্রতিটি দিকে ১ থেকে ৭ নম্বর দেবেন, নাম-স্কুল না দেখে। ওজন অনুযায়ী মিলিয়ে মোট নম্বর ১০০-তে।",
+    en: "Judges score each criterion from 1 to 7 without seeing names or schools. Weighted together, the total is out of 100.",
+  },
+  weight: { bn: "ওজন", en: "Weight" },
+  bands: [
+    { bn: "১–২ শুরু", en: "1–2 starting" },
+    { bn: "৩–৪ এগোচ্ছে", en: "3–4 developing" },
+    { bn: "৫–৬ দক্ষ", en: "5–6 skilled" },
+    { bn: "৭ অসাধারণ", en: "7 excellent" },
+  ],
+  topLabel: { bn: "৭ পেতে হলে:", en: "What earns a 7:" },
+  scorecard: {
+    title: { bn: "সবার জন্য স্কিল স্কোরকার্ড", en: "A Skill Scorecard for everyone" },
+    sub: { bn: "জিতুক বা না জিতুক, যে শেষ করেছে সে এমন একটা স্কোরকার্ড পায়। (নমুনা)", en: "Win or not, everyone who finished gets a scorecard like this. (Sample)" },
+    name: { bn: "তানভীর হাসান", en: "Tanvir Hasan" },
+    cls: { bn: "৯ম শ্রেণি · বগুড়া", en: "Class 9 · Bogura" },
+    kind: { bn: "স্কিল স্কোরকার্ড", en: "Skill Scorecard" },
+    of7: { bn: "/৭", en: "/7" },
+    profile: { bn: "লার্নার প্রোফাইল", en: "Learner profile" },
+    badges: [
+      { bn: "অনুসন্ধানী", en: "Inquirer" },
+      { bn: "চিন্তাশীল", en: "Thinker" },
+      { bn: "নিজের কাজ ফিরে দেখে", en: "Reflective" },
+    ],
+    comment: { bn: "বিচারকের মন্তব্য", en: "Judge's comment" },
+    commentText: { bn: "শুরুটা দারুণ। দ্বিতীয় রাউন্ডে যে বদল এনেছ, তা স্পষ্ট বোঝা যায়। শেষটা আরেকটু ধীরে বলো।", en: "A great opening. The change you made in round 2 is clear. Slow down a little at the end." },
+    poweredBy: { bn: "সৌজন্যে {sponsor} × বিজয়ী", en: "Powered by {sponsor} × Beejoyi" },
+    poweredSolo: { bn: "বিজয়ী যাচাই করা", en: "Verified by Beejoyi" },
+    download: { bn: "PDF নামাও", en: "Download PDF" },
+    copy: { bn: "যাচাই লিংক কপি করো", en: "Copy verify link" },
+    copied: { bn: "লিংক কপি হয়েছে", en: "Link copied" },
+    share: { bn: "ফেসবুকে শেয়ার করো", en: "Share on Facebook" },
+    scores: [5, 6, 4, 6],
+  },
+  processOf: { bn: "কাজের পেছনের ভাবনা", en: "The thinking behind it" },
+  processNotes: [
+    { bn: "প্রথমে আকাশ ফাঁকা ছিল। মেন্টরের কথায় আলো ডান দিকে সরিয়েছি, এখন চোখ মূল জিনিসে যায়।", en: "The sky was empty at first. After the mentor's tip I moved the light right, so the eye goes to the subject." },
+    { bn: "প্রথম চেষ্টায় খুব দ্রুত বলছিলাম। ফিডব্যাক পেয়ে প্রতিটি লাইনের পরে থেমেছি।", en: "I spoke too fast at first. After the feedback I paused after every line." },
+    { bn: "তিনবার নতুন করে করেছি। শেষবার রঙ কমিয়ে শুধু গল্পটা রেখেছি।", en: "I redid it three times. The last time I used fewer colours and kept just the story." },
+  ],
   timeline: [
     { bn: "রেজিস্ট্রেশন ও জমা শুরু", en: "Registration and entries open" },
     { bn: "জমার শেষ দিন", en: "Last day for entries" },
     { bn: "বিচার", en: "Judging" },
     { bn: "ফলাফল প্রকাশ", en: "Results announced" },
-    { bn: "সার্টিফিকেট ও পুরস্কার", en: "Certificates and prizes" },
+    { bn: "স্কোরকার্ড ও পুরস্কার", en: "Scorecards and prizes" },
   ],
   when: {
     done: { bn: "হয়ে গেছে", en: "Done" },
@@ -721,6 +839,7 @@ export const detail = {
     joined: { bn: "জন যোগ দিয়েছে", en: "have joined" },
     left: { bn: "বাকি", en: "left" },
     whatsapp: { bn: "হোয়াটসঅ্যাপে পাঠাও", en: "Send on WhatsApp" },
+    facebook: { bn: "ফেসবুকে শেয়ার করো", en: "Share on Facebook" },
     copy: { bn: "লিংক কপি করো", en: "Copy link" },
     copied: { bn: "লিংক কপি হয়েছে", en: "Link copied" },
   },
@@ -858,6 +977,8 @@ export const uploadRules: Record<Format, { kind: UploadKind; accept: string; max
 };
 
 export const WORDS = { min: 300, max: 800 };
+/** Round 2 and finale reflection log, in characters (blueprint: deters AI copy-paste). */
+export const REFLECT = { min: 150, max: 300 };
 
 export const submit = {
   title: { bn: "জমা দাও", en: "Submit your entry" },
@@ -890,6 +1011,40 @@ export const submit = {
   writePh: { bn: "তোমার লেখা এখানে শুরু করো…", en: "Start writing here…" },
   words: { bn: "শব্দ", en: "words" },
   wordRange: { bn: "৩০০–৮০০ শব্দের মধ্যে রাখো", en: "Keep it between 300 and 800 words" },
+  learn: {
+    title: { bn: "৩ মিনিটে শিখে নাও", en: "Learn it in 3 minutes" },
+    sub: { bn: "শুরুর আগে ছোট্ট কিছু টিপস। যেভাবে সুবিধা, সেভাবে নাও।", en: "A few quick tips before you start. Take them however suits you." },
+    read: { bn: "পড়ে নাও", en: "Read" },
+    watch: { bn: "ভিডিও দেখো", en: "Watch" },
+    watchSize: { bn: "ডেটা সেভার · ৪ MB", en: "Data saver · 4 MB" },
+    listen: { bn: "শোনো", en: "Listen" },
+    listenSize: { bn: "১ MB", en: "1 MB" },
+    mediaNote: { bn: "নমুনা: মেন্টরের আসল ভিডিও আর অডিও পরে যোগ হবে। লেখা টিপস সবসময় নিচে থাকবে।", en: "Sample: the mentor's real video and audio come later. The written tips are always below." },
+    done: { bn: "বুঝেছি, শুরু করি", en: "Got it, let's start" },
+    doneState: { bn: "শেখা হয়ে গেছে", en: "Learning done" },
+    again: { bn: "আবার দেখো", en: "See again" },
+    examples: { bn: "আগের বিজয়ীদের কাজ দেখো", en: "See past winning entries" },
+    locked: { bn: "শেখার কার্ড শেষ হলে এখানে কাজ দিতে পারবে।", en: "You can add your work here after the learning card." },
+  },
+  rubricPeek: { bn: "বিচারকরা যা দেখবেন (প্রতিটি ১–৭)", en: "What the judges look for (each 1–7)" },
+  compressed: { bn: "ফোনেই ছোট করা হয়েছে: {from} থেকে {to}। ডেটা বাঁচল।", en: "Shrunk on your phone from {from} to {to}. Data saved." },
+  resumable: { bn: "নেট কেটে গেলে যেখানে থেমেছিল, সেখান থেকেই আবার চলবে।", en: "If the internet drops, the upload carries on from where it stopped." },
+  process: {
+    title: { bn: "কাজের পেছনের গল্প", en: "The story behind your work" },
+    sub: { bn: "তিনটা ছোট প্রশ্ন। বিচারকরা ভাবনাটাও দেখেন, শুধু ফলাফল নয়।", en: "Three short questions. Judges look at your thinking, not just the result." },
+    kidNote: { bn: "ছোটরা মুখে বলুক, বাবা-মা লিখে দিন।", en: "Little ones can say it out loud while a parent types." },
+    prompts: [
+      { q: { bn: "কী দেখে বা ভেবে শুরু করলে?", en: "What did you notice or think of first?" }, ph: { bn: "যেমন: আমাদের গ্রামের নদীটা খুব সুন্দর…", en: "e.g. The river in our village is beautiful…" } },
+      { q: { bn: "কী চেষ্টা করলে বা খুঁজে দেখলে?", en: "What did you try or find out?" }, ph: { bn: "যেমন: দুইজন শিক্ষক আর পাঁচজন বন্ধুকে জিজ্ঞেস করেছি…", en: "e.g. I asked two teachers and five friends…" } },
+      { q: { bn: "কী বদলালে, আর কেন?", en: "What did you change, and why?" }, ph: { bn: "যেমন: প্রথম ছবিটা অন্ধকার ছিল, তাই জানালার পাশে আবার তুলেছি…", en: "e.g. The first photo was dark, so I reshot it by the window…" } },
+    ],
+    reflectLabel: { bn: "রাউন্ড {prev}-এর কোন ফিডব্যাক কাজে লাগালে?", en: "Which round {prev} feedback did you use?" },
+    reflectPh: { bn: "যেমন: বিচারক বলেছিলেন শেষটা তাড়াহুড়ো; এবার প্রতিটি লাইনের পরে থেমেছি…", en: "e.g. The judge said my ending was rushed, so I paused after every line…" },
+    reflectNote: { bn: "১৫০–৩০০ অক্ষর। নিজের ভাষায় লেখো; এটা কপি-পেস্টের জায়গা নয়।", en: "150–300 characters. Use your own words; this isn't for copy-paste." },
+    chars: { bn: "অক্ষর", en: "characters" },
+  },
+  nextRound: { bn: "রাউন্ড {now}-এর ১–৭ নম্বর আর মন্তব্য পাবে জমার শেষ দিনের ৫ দিন পরে। তারপর পরের রাউন্ডে আরো ভালো করার সুযোগ।", en: "Your round {now} scores (1–7) and comments arrive 5 days after the deadline. Then you get to improve in the next round." },
+  feedbackSoon: { bn: "ফলাফলের সাথে পাবে স্কিল স্কোরকার্ড: প্রতিটি দিকে ১–৭ নম্বর আর বিচারকের মন্তব্য।", en: "With the results you'll get a Skill Scorecard: a 1–7 score on each criterion and the judges' comments." },
   caption: { bn: "শিরোনাম বা ক্যাপশন", en: "Title or caption" },
   captionPh: { bn: "যেমন: আমাদের গ্রামের নদী", en: "e.g. The river in our village" },
   optional: { bn: "ঐচ্ছিক", en: "optional" },
@@ -908,6 +1063,8 @@ export const submit = {
     words: { bn: "লেখা ৩০০–৮০০ শব্দের মধ্যে রাখো", en: "Keep your writing to 300–800 words" },
     wait: { bn: "আপলোড শেষ হওয়া পর্যন্ত অপেক্ষা করো", en: "Wait for the upload to finish" },
     checks: { bn: "নিচের দুটো ঘরে টিক দাও", en: "Tick the two required boxes" },
+    learn: { bn: "আগে ৩ মিনিটের শেখার কার্ডটা শেষ করো", en: "Finish the 3-minute learning card first" },
+    reflect: { bn: "ফিডব্যাক নিয়ে ১৫০–৩০০ অক্ষর লেখো", en: "Write 150–300 characters about the feedback you used" },
   },
   ready: { bn: "সব ঠিক আছে, জমা দিতে পারো", en: "All set, ready to submit" },
   submitBtn: { bn: "জমা দাও", en: "Submit entry" },

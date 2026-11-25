@@ -267,7 +267,7 @@ export function Winners({ c }: { c: Contest }) {
                       key={n}
                       title={tr(m)}
                       className={`grid size-9 place-items-center rounded-full border-2 border-white text-sm font-bold ${
-                        ["bg-indigo text-white", "bg-leaf text-white", "bg-honey text-ink"][n]
+                        ["bg-indigo text-white", "bg-leaf-ink text-white", "bg-honey text-ink"][n]
                       } ${n ? "-ml-2" : ""}`}
                     >
                       {tr(m).slice(0, lang === "bn" ? 2 : 1)}
@@ -331,6 +331,11 @@ export function Winners({ c }: { c: Contest }) {
                 <span className="block text-sm text-ink-soft">{tr(w.cls)}</span>
               </span>
               <span className="font-display text-2xl font-semibold">{num(w.score, lang)}</span>
+            </div>
+            {/* The work and the thinking behind it, side by side (finalist gallery card) */}
+            <div className="mt-auto border-t border-ink/10 px-4 pt-3 pb-4 text-sm">
+              <p className="font-semibold text-ink-soft">{tr(detail.processOf)}</p>
+              <p className="mt-1">{tr(detail.processNotes[i])}</p>
             </div>
           </li>
         ))}

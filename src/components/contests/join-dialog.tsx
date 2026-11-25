@@ -6,6 +6,7 @@ import { RadioGroup } from "@base-ui/react/radio-group";
 import Link from "next/link";
 import { useState } from "react";
 import { ages, childProfiles, detail, num, t, type Contest } from "@/lib/content";
+import { TrophyIcon } from "@/components/icons";
 import { useHome } from "@/lib/home-state";
 
 type Step = "who" | "team" | "pay" | "done";
@@ -101,7 +102,7 @@ export function JoinDialog({
                 </p>
               )}
               <Dialog.Title className="font-display text-2xl font-semibold">
-                {step === "who" ? tr(detail.join.title) : step === "team" ? tr(tm.title) : step === "pay" ? tr(detail.join.payTitle) : `🎉 ${tr(detail.join.doneTitle)}`}
+                {step === "who" ? tr(detail.join.title) : step === "team" ? tr(tm.title) : step === "pay" ? tr(detail.join.payTitle) : tr(detail.join.doneTitle)}
               </Dialog.Title>
             </div>
             <Dialog.Close aria-label="Close" className="grid size-11 shrink-0 place-items-center rounded-full hover:bg-indigo-wash">
@@ -284,8 +285,8 @@ export function JoinDialog({
           {/* Step 3: celebrate, then exactly one next step (peak-end) */}
           {step === "done" && (
             <div className="mt-2 text-center">
-              <div aria-hidden className="mx-auto my-4 grid size-24 place-items-center rounded-full bg-honey text-5xl">
-                🏆
+              <div aria-hidden className="mx-auto my-4 grid size-24 place-items-center rounded-full bg-honey text-ink">
+                <TrophyIcon className="size-12" />
               </div>
               <p className="text-lg">
                 <strong>{debate ? team.name : person && tr(person.name)}</strong>, {tr(c.title)}

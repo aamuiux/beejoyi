@@ -7,7 +7,9 @@ import { ContestCard } from "@/components/home/contest-card";
 import { PosterArt } from "@/components/home/poster-art";
 import { ages, contests, detail, num, statusOf, formatGuides, t, type Contest } from "@/lib/content";
 import { useHome } from "@/lib/home-state";
+import { HandshakeIcon, HeadphonesIcon, ScorecardIcon } from "@/components/icons";
 import { JoinDialog, joinLabel } from "./join-dialog";
+import { Scorecard } from "./scorecard";
 import { Winners } from "./winner-entry";
 
 export function ContestDetail({ id }: { id: string }) {
@@ -30,22 +32,29 @@ export function ContestDetail({ id }: { id: string }) {
         ? { label: tr(detail.facts.opens), value: `${num(c.startsIn ?? 0, lang)} ${tr(detail.inDays)}` }
         : { label: tr(detail.facts.deadline), value: tr(detail.facts.ended) };
 
-  const facts = [
+  const facts: { label: string; value: string; tone?: string; sub?: string }[] = [
     { label: tr(detail.facts.age), value: ageLabel },
-    { label: tr(detail.facts.fee), value: fee, tone: c.fee === 0 ? "free" : undefined },
+    {
+      label: tr(detail.facts.fee),
+      value: fee,
+      tone: c.fee === 0 ? "free" : undefined,
+      // Free because a sponsor pays; say who (trust: "free" shouldn't read like a catch)
+      sub: c.sponsor ? `${tr(detail.sponsor.by)} ${tr(c.sponsor)}` : undefined,
+    },
     { ...deadline, tone: urgent ? "urgent" : undefined },
     { label: tr(detail.facts.prize), value: tr(c.prize) },
   ];
 
-  const sections = [
-    ...(status === "ended" ? (["winners"] as const) : []),
+  const sections: (keyof typeof detail.sections)[] = [
+    ...(status === "ended" ? (["winners", "scorecard"] as const) : []),
     "overview",
+    // Multi-round contests show their rounds instead of a one-off timeline
+    c.round ? ("rounds" as const) : ("timeline" as const),
     "how",
     "rules",
     "judging",
-    "timeline",
     "faq",
-  ] as const;
+  ];
 
   const primary =
     status === "open" ? (
@@ -61,12 +70,12 @@ export function ContestDetail({ id }: { id: string }) {
         type="button"
         onClick={() => setReminded(true)}
         aria-pressed={reminded}
-        className="min-h-13 w-full rounded-full border-2 border-indigo px-6 text-lg font-semibold text-indigo-ink hover:bg-indigo-wash aria-pressed:border-leaf aria-pressed:text-leaf"
+        className="min-h-13 w-full rounded-full border-2 border-indigo px-6 text-lg font-semibold text-indigo-ink hover:bg-indigo-wash aria-pressed:border-leaf aria-pressed:text-leaf-ink"
       >
         {reminded ? `✓ ${tr(detail.cta.reminded)}` : tr(detail.cta.remind)}
       </button>
     ) : (
-      <a href="#winners" className="flex min-h-13 w-full items-center justify-center rounded-full bg-leaf px-6 text-lg font-semibold text-white">
+      <a href="#winners" className="flex min-h-13 w-full items-center justify-center rounded-full bg-leaf-ink px-6 text-lg font-semibold text-white">
         {tr(detail.cta.winners)}
       </a>
     );
@@ -96,13 +105,23 @@ export function ContestDetail({ id }: { id: string }) {
             <p className="flex flex-wrap items-center gap-2 text-ink-soft">
               <span className="grid size-8 place-items-center rounded-full bg-indigo-wash text-sm font-bold text-indigo-ink">{c.orgInitial}</span>
               <span className="font-medium text-ink">{tr(c.org)}</span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-leaf/10 px-2.5 py-0.5 text-xs font-semibold text-leaf">
+              <span className="inline-flex items-center gap-1 rounded-full bg-leaf/10 px-2.5 py-0.5 text-xs font-semibold text-leaf-ink">
                 <svg viewBox="0 0 20 20" className="size-3.5" aria-hidden>
                   <path d="M4 10l4 4 8-8" stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 {tr(detail.verified)}
               </span>
             </p>
+            {c.sponsor && (
+              <p className="mt-2 flex items-start gap-2 text-sm text-ink-soft">
+                <HandshakeIcon className="mt-0.5 size-4 shrink-0 text-indigo-ink" />
+                <span>
+                  {tr(detail.sponsor.by)} <span className="font-semibold text-ink">{tr(c.sponsor)}</span>
+                  {lang === "bn" ? "। " : ". "}
+                  {tr(detail.sponsor.note)}
+                </span>
+              </p>
+            )}
             <h1 className="display mt-3 text-4xl font-bold sm:text-5xl">{tr(c.title)}</h1>
 
             <dl className="mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
@@ -115,6 +134,7 @@ export function ContestDetail({ id }: { id: string }) {
                 >
                   <dt className="text-sm text-ink-soft">{f.label}</dt>
                   <dd className={`mt-1 font-display text-lg leading-snug font-semibold ${f.tone === "urgent" ? "text-alert" : ""}`}>{f.value}</dd>
+                  {f.sub && <dd className="mt-0.5 text-xs text-honey-ink">{f.sub}</dd>}
                 </div>
               ))}
             </dl>
@@ -142,14 +162,36 @@ export function ContestDetail({ id }: { id: string }) {
               <Winners c={c} />
             </Section>
           )}
+          {status === "ended" && (
+            <Section id="scorecard" title={tr(detail.scorecard.title)}>
+              <Scorecard c={c} />
+            </Section>
+          )}
 
           <Section id="overview" title={tr(detail.sections.overview)}>
+            {/* Statement of inquiry: the real-world question the whole contest explores */}
+            {c.inquiry && (
+              <div className="mb-6 max-w-[65ch] rounded-3xl bg-night p-6 text-white">
+                <p className="text-sm font-semibold text-honey">{tr(detail.inquiry)}</p>
+                <p className="display mt-2 text-2xl font-bold sm:text-3xl">{tr(c.inquiry)}</p>
+              </div>
+            )}
             <p className="max-w-[65ch] text-lg">{tr(guide.overview)}</p>
             <p className="mt-4 flex max-w-[65ch] gap-3 rounded-2xl bg-honey-wash p-4 text-honey-ink">
-              <span aria-hidden>🏅</span>
+              <ScorecardIcon className="mt-1 size-5 shrink-0" />
               {tr(detail.everyone)}
             </p>
           </Section>
+
+          {c.round ? (
+            <Section id="rounds" title={tr(detail.sections.rounds)}>
+              <Rounds c={c} />
+            </Section>
+          ) : (
+            <Section id="timeline" title={tr(detail.sections.timeline)}>
+              <Timeline c={c} />
+            </Section>
+          )}
 
           <Section id="how" title={tr(detail.sections.how)}>
             <ol className="grid gap-4 sm:grid-cols-3">
@@ -178,24 +220,8 @@ export function ContestDetail({ id }: { id: string }) {
           </Section>
 
           <Section id="judging" title={tr(detail.sections.judging)}>
-            <p className="text-ink-soft">{tr(detail.rubricNote)}</p>
-            <ul className="mt-5 max-w-xl space-y-4">
-              {guide.rubric.map((r, i) => (
-                <li key={i}>
-                  <div className="flex justify-between font-medium">
-                    <span>{tr(r.name)}</span>
-                    <span>{num(r.weight, lang)}</span>
-                  </div>
-                  <div className="mt-1.5 h-2.5 rounded-full bg-line">
-                    <div className="h-full rounded-full bg-indigo" style={{ width: `${r.weight}%` }} />
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </Section>
-
-          <Section id="timeline" title={tr(detail.sections.timeline)}>
-            <Timeline c={c} />
+            <p className="max-w-[65ch] text-ink-soft">{tr(detail.rubricNote)}</p>
+            <Rubric guide={guide} />
           </Section>
 
           <Section id="faq" title={tr(detail.sections.faq)}>
@@ -268,6 +294,97 @@ export function ContestDetail({ id }: { id: string }) {
   );
 }
 
+/** The published 1–7 rubric: the scale once, then what a 7 means for each criterion. */
+function Rubric({ guide }: { guide: (typeof formatGuides)[keyof typeof formatGuides] }) {
+  const { tr, lang } = useHome();
+  return (
+    <div className="mt-5 max-w-2xl">
+      <div aria-hidden className="grid grid-cols-7 gap-1 text-center text-sm font-semibold">
+        {Array.from({ length: 7 }, (_, n) => (
+          <span
+            key={n}
+            className={`rounded-lg py-1.5 ${n === 6 ? "bg-indigo-ink text-white" : n >= 4 ? "bg-indigo text-white" : n >= 2 ? "bg-indigo/25 text-indigo-ink" : "bg-indigo-wash text-indigo-ink"}`}
+          >
+            {num(n + 1, lang)}
+          </span>
+        ))}
+      </div>
+      <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
+        {detail.bands.map((b, i) => (
+          <span key={i}>{tr(b)}</span>
+        ))}
+      </p>
+
+      <ul className="mt-6 divide-y divide-line border-y border-line">
+        {guide.rubric.map((r, i) => (
+          <li key={i} className="py-4">
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="font-semibold">{tr(r.name)}</span>
+              <span className="shrink-0 text-sm text-ink-soft tabular-nums">
+                {tr(detail.weight)} {num(r.weight, lang)}%
+              </span>
+            </div>
+            <div className="mt-2 h-1.5 rounded-full bg-line" aria-hidden>
+              <div className="h-full rounded-full bg-indigo" style={{ width: `${r.weight}%` }} />
+            </div>
+            <p className="mt-2 text-sm">
+              <span className="font-semibold text-indigo-ink">{tr(detail.topLabel)}</span> {tr(r.top)}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Multi-round journey: inquiry, then feedback and improvement, then the finale. */
+function Rounds({ c }: { c: Contest }) {
+  const { tr, lang } = useHome();
+  const status = statusOf(c);
+  const now = c.round!.now;
+  return (
+    <ol className="grid gap-4 md:grid-cols-3">
+      {detail.rounds.map((r, i) => {
+        const n = i + 1;
+        const state = status === "ended" || n < now ? "done" : n === now && status === "open" ? "now" : "next";
+        return (
+          <li
+            key={i}
+            className={`flex flex-col rounded-2xl border p-5 ${
+              state === "now" ? "border-indigo bg-white ring-4 ring-indigo/10" : state === "done" ? "border-line bg-white" : "border-dashed border-line bg-paper"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span
+                className={`grid size-10 place-items-center rounded-full font-display font-bold ${
+                  state === "next" ? "border-2 border-line text-ink-soft" : "bg-indigo text-white"
+                }`}
+              >
+                {num(n, lang)}
+              </span>
+              <span
+                className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                  state === "now" ? "bg-honey text-ink" : state === "done" ? "bg-leaf/10 text-leaf-ink" : "bg-line text-ink-soft"
+                }`}
+              >
+                {tr(detail.roundState[state])}
+              </span>
+            </div>
+            <h3 className="mt-3 font-display text-xl font-semibold">{tr(r.t)}</h3>
+            <p className="mt-1 text-ink-soft">{tr(r.d)}</p>
+            {i === 1 && (
+              <p className="mt-3 flex gap-2 rounded-xl bg-indigo-wash p-3 text-sm text-indigo-ink">
+                <HeadphonesIcon className="mt-0.5 size-4 shrink-0" />
+                {tr(detail.clinic)}
+              </p>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <section id={id} className="scroll-mt-32">
@@ -327,6 +444,14 @@ function ShareRow({ title }: { title: string }) {
 
   return (
     <div className="mt-4 grid grid-cols-2 gap-2">
+      <a
+        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="col-span-2 flex min-h-11 items-center justify-center rounded-full bg-[#1877F2]/10 text-sm font-semibold text-[#0B5FCC] hover:bg-[#1877F2]/20"
+      >
+        {tr(detail.sidebar.facebook)}
+      </a>
       <a
         href={`https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`}
         target="_blank"
