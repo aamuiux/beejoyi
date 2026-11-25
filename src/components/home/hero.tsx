@@ -1,164 +1,237 @@
 "use client";
 
+/**
+ * The stage. A contest is a show in rounds, judged in the open: judges raise
+ * 1–7 paddles over a student's entry under one spotlight, the rounds sit on the
+ * stage floor, and the podium holds the one action (find a contest for your age).
+ * Direction contract: .impeccable/surfaces/src-app-page-tsx.md
+ */
+
 import { Toggle } from "@base-ui/react/toggle";
 import { ToggleGroup } from "@base-ui/react/toggle-group";
-import { useEffect, useState } from "react";
-import { ages, t, type AgeKey, type Contest } from "@/lib/content";
+import { useState } from "react";
+import { PhotoScene } from "@/components/contests/winner-entry";
+import { CheckIcon } from "@/components/icons";
+import { ages, num, t, type AgeKey } from "@/lib/content";
 import { useHome } from "@/lib/home-state";
-import { PosterArt } from "./poster-art";
 
-/**
- * Colour stage: each verb arrives with its own colour block, matching art and a soft
- * wash over the whole hero. Order matches t.hero.verbs (draw, write, speak, sing, play).
- * Crimson is reserved for deadlines, so "speak" uses pink.
- */
-const stages: { bg: string; ink: string; wash: string; shape: Contest["poster"]["shape"] }[] = [
-  { bg: "#FFE3A1", ink: "#5C4200", wash: "#FFF8E6", shape: "sun" },
-  { bg: "#CDEBDA", ink: "#1F5A3E", wash: "#EEF8F2", shape: "pen" },
-  { bg: "#FFD3DD", ink: "#99133A", wash: "#FFF2F5", shape: "mic" },
-  { bg: "#6563F1", ink: "#FFFFFF", wash: "#F0EFFE", shape: "note" },
-  { bg: "#C9E8F4", ink: "#0B4F5C", wash: "#EDF8FB", shape: "play" },
-];
-const INTERVAL = 2500;
-
-function useStage() {
-  const [i, setI] = useState(0);
-  const [paused, setPaused] = useState(false);
-  useEffect(() => {
-    if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = setInterval(() => setI((n) => (n + 1) % stages.length), INTERVAL);
-    return () => clearInterval(id);
-  }, [paused]);
-  return { i, next: () => setI((n) => (n + 1) % stages.length), setPaused };
-}
+const st = t.stage;
 
 export function Hero() {
-  const { tr, lang, age, setAge, setQuery } = useHome();
-  const [q, setQ] = useState("");
-  const { i, next, setPaused } = useStage();
-  const stage = stages[i];
-  const verbs = t.hero.verbs[lang];
-
-  const goToContests = () => document.getElementById("contests")?.scrollIntoView({ behavior: "smooth" });
-
+  const { tr, lang } = useHome();
   return (
-    <section id="top" className="relative overflow-hidden transition-colors duration-700" style={{ backgroundColor: stage.wash }}>
-      <div className="mx-auto max-w-7xl px-4 pt-14 pb-16 text-center sm:px-6 lg:pt-20 lg:pb-24">
-        <h1>
-          <span className="sr-only">
-            {verbs.join(", ")}: {tr(t.hero.line2)}
-          </span>
+    <section id="top" aria-labelledby="stage-title" className="relative isolate overflow-hidden bg-navy text-white">
+      {/* Stage: curtain above, a navy floor with a lit horizon below, one spotlight from above */}
+      <div aria-hidden className="curtain absolute inset-x-0 top-0 -z-20 h-[calc(100%-13rem)] lg:h-[calc(100%-11.5rem)]" />
+      <div aria-hidden className="stage-floor absolute inset-x-0 bottom-0 -z-20 h-52 lg:h-46" />
+      <div aria-hidden className="spotlight absolute top-0 left-1/2 -z-10 h-[calc(100%-6rem)] w-[min(52rem,150vw)] -translate-x-1/2" />
 
-          {/* The stage: decorative, so hidden from screen readers (the sentence above says it all) */}
-          <span
-            aria-hidden
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-            onClick={next}
-            className="flex cursor-pointer items-center justify-center gap-3 select-none sm:gap-5"
+      <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:pt-10">
+        {/* Banner */}
+        <div className="mx-auto max-w-6xl text-center">
+          <h1
+            id="stage-title"
+            className="display text-[clamp(2.5rem,6.6vw,5.5rem)] font-bold text-balance"
+            style={{ fontVariationSettings: '"wdth" 118' }}
           >
-            {/* Colour block: as wide as the longest word, so the layout never jumps */}
-            <span
-              className="display inline-grid -rotate-2 rounded-[1.75rem] px-6 pt-1 pb-2 text-[clamp(2.9rem,10vw,6.75rem)] font-bold transition-colors duration-500 sm:rounded-[2.25rem] sm:px-10"
-              style={{ backgroundColor: stage.bg, color: stage.ink }}
-            >
-              {verbs.map((v, n) => (
-                <span
-                  key={v}
-                  className={`col-start-1 row-start-1 transition-all duration-500 ${
-                    n === i ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
-                  }`}
-                >
-                  {v}
-                </span>
-              ))}
-            </span>
-
-            {/* Matching art tile */}
-            <span
-              className="relative grid size-20 shrink-0 rotate-3 place-items-center rounded-[1.5rem] transition-colors duration-500 sm:size-28 lg:size-36 lg:rounded-[2rem]"
-              style={{ backgroundColor: stage.bg }}
-            >
-              {stages.map((st, n) => (
-                <span
-                  key={st.shape}
-                  className={`absolute inset-3 transition-all duration-500 sm:inset-5 ${n === i ? "scale-100 opacity-100" : "scale-75 opacity-0"}`}
-                >
-                  <PosterArt shape={st.shape} ink={stage.ink} />
-                </span>
-              ))}
-            </span>
-          </span>
-
-          <span
-            aria-hidden
-            className="display mt-5 block text-[clamp(1.6rem,4vw,2.9rem)] font-semibold text-balance text-ink"
-            style={{ fontVariationSettings: '"wdth" 100' }}
+            {tr(st.title)}
+          </h1>
+          <p className="mx-auto mt-3 max-w-3xl text-lg text-white/85 sm:text-xl">{tr(st.sub)}</p>
+          {/* Phones: the action can't wait for the podium at the bottom of the stage */}
+          <a
+            href="#contests"
+            id="stage-cta"
+            className="mt-6 inline-flex min-h-13 items-center rounded-full bg-white px-7 text-lg font-semibold text-night hover:bg-indigo-wash lg:hidden"
           >
-            {tr(t.hero.line2)}
-          </span>
-        </h1>
+            {tr(st.find)}
+          </a>
+        </div>
 
-        <p className="mx-auto mt-4 max-w-md text-lg text-ink-soft">{tr(t.hero.sub)}</p>
-
-        <form
-          role="search"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setQuery(q.trim());
-            goToContests();
-          }}
-          onFocus={() => setPaused(true)}
-          onBlur={() => setPaused(false)}
-          className="mx-auto mt-9 flex max-w-xl items-center gap-2 rounded-full border border-line bg-white p-1.5 shadow-[0_10px_30px_-14px_rgba(36,34,110,0.3)] focus-within:border-indigo"
+        {/* The stage row: rounds | entry under judgement | podium. All three stand on the floor. */}
+        <div
+          id="stage"
+          className="mt-8 flex flex-col items-center gap-8 lg:mt-6 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-end lg:gap-10"
         >
-          <label htmlFor="hero-search" className="sr-only">
-            {tr(t.hero.searchBtn)}
-          </label>
-          <svg viewBox="0 0 24 24" className="ml-3 size-5 shrink-0 text-ink-soft" aria-hidden>
-            <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" fill="none" />
-            <path d="M20 20l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          <input
-            id="hero-search"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={tr(t.hero.searchPh)}
-            className="min-w-0 flex-1 bg-transparent py-2 text-base outline-none placeholder:text-ink-soft"
-          />
-          <button type="submit" className="min-h-12 shrink-0 rounded-full bg-ink px-5 font-semibold text-white hover:bg-night">
-            {tr(t.hero.searchBtn)}
-          </button>
-        </form>
+          <Rounds />
+          <Judged />
+          <Podium />
+        </div>
+      </div>
 
-        <div className="mt-6">
-          <p id="age-label" className="sr-only">
-            {tr(t.hero.iam)}
-          </p>
-          <ToggleGroup
-            aria-labelledby="age-label"
-            value={age ? [age] : []}
-            onValueChange={(v) => {
-              setAge((v[0] as AgeKey) ?? null);
-              if (v[0]) goToContests();
-            }}
-            className="flex flex-wrap items-center justify-center gap-2"
-          >
-            <span aria-hidden className="mr-1 text-sm text-ink-soft">
-              {tr(t.hero.iam)}
-            </span>
-            {ages.map((a) => (
-              <Toggle
-                key={a.key}
-                value={a.key}
-                className="min-h-11 rounded-full border border-line bg-white px-4 text-sm font-medium text-ink hover:border-indigo data-[pressed]:border-indigo data-[pressed]:bg-indigo data-[pressed]:text-white"
-              >
-                {a.label[lang]}
-              </Toggle>
+      {/* Footlights: sample stats, each marked as a sample */}
+      <div className="border-t border-white/15 bg-navy">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-3 md:grid-cols-4">
+            {t.trust.items.map((s) => (
+              <div key={s.nEn} className="flex items-baseline gap-2">
+                <span aria-hidden className="size-2 shrink-0 bg-white/50 translate-y-[-0.2em] rounded-full" />
+                <div>
+                  <dt className="sr-only">{tr(s.label)}</dt>
+                  <dd className="display text-2xl font-bold">
+                    {lang === "bn" ? s.n : s.nEn}{" "}
+                    <span className="align-middle text-xs font-medium text-white/60" style={{ fontVariationSettings: "normal" }}>
+                      {tr(st.sample)}
+                    </span>
+                  </dd>
+                  <dd className="text-sm text-white/70">{tr(s.label)}</dd>
+                </div>
+              </div>
             ))}
-          </ToggleGroup>
+          </dl>
         </div>
       </div>
     </section>
+  );
+}
+
+/** Centre stage: one entry under the spotlight, three judges' paddles that flip to show the rubric. */
+function Judged() {
+  const { tr, lang } = useHome();
+  const [open, setOpen] = useState<number | null>(null);
+  return (
+    <figure id="judged" className="order-first flex flex-col items-center lg:order-none">
+      <div className="relative">
+        <div className="w-56 overflow-hidden rounded-xl border-[10px] border-white bg-white shadow-[0_24px_50px_-20px_rgba(0,0,0,0.65)] sm:w-64 lg:w-64">
+          <div className="aspect-[4/3]">
+            <PhotoScene kind="drawing" i={0} />
+          </div>
+        </div>
+        {/* The seal lands last: verified, on a published rubric */}
+        <span
+          aria-hidden
+          className="seal-stamp absolute -top-7 -right-9 grid size-16 place-items-center rounded-full border-4 border-white bg-honey text-center text-ink shadow-[0_10px_20px_-10px_rgba(0,0,0,0.6)]"
+        >
+          <span className="flex flex-col items-center text-[10px] leading-tight font-bold">
+            <CheckIcon className="size-5" />
+            {tr(st.verified)}
+          </span>
+        </span>
+      </div>
+      <figcaption className="mt-2 text-sm text-white/80">{tr(st.entryLabel)}</figcaption>
+
+      {/* Paddles: tap one and it flips to show what earns a 7 (signature interaction) */}
+      <div role="group" aria-label={tr(st.paddlesLabel)} className="mt-4 flex items-end gap-4 sm:gap-5">
+        {st.paddles.map((p, i) => {
+          const flipped = open === i;
+          return (
+            <button
+              key={i}
+              type="button"
+              aria-pressed={flipped}
+              onClick={() => setOpen(flipped ? null : i)}
+              className="paddle-rise group flex w-20 flex-col items-center rounded-2xl focus-visible:outline-white sm:w-28"
+              style={{ animationDelay: `${200 + i * 160}ms` }}
+            >
+              <span className="relative block size-20 [perspective:600px] sm:size-28">
+                <span
+                  className={`relative block size-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] [transform-style:preserve-3d] motion-reduce:transition-none ${
+                    flipped ? "[transform:rotateY(180deg)]" : "group-hover:-translate-y-1"
+                  }`}
+                >
+                  {/* Front: the score */}
+                  <span className="display absolute inset-0 grid place-items-center rounded-full bg-white text-4xl font-bold text-night shadow-[0_12px_20px_-10px_rgba(0,0,0,0.7)] [backface-visibility:hidden] sm:text-6xl">
+                    {num(p.score, lang)}
+                  </span>
+                  {/* Back: what earns a 7 */}
+                  <span className="absolute inset-0 flex flex-col items-center justify-center rounded-full bg-indigo-wash px-2.5 text-center text-xs leading-snug sm:text-[13px] font-semibold text-night shadow-[0_12px_20px_-10px_rgba(0,0,0,0.7)] [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                    <span className="text-xs font-bold text-indigo-ink">{tr(st.sevenShort)}</span>
+                    {tr(p.short)}
+                  </span>
+                </span>
+              </span>
+              <span aria-hidden className="h-8 w-2.5 rounded-b bg-[#B8895A] sm:h-14" />
+              <span className="mt-1.5 text-center text-sm leading-snug font-medium text-white">{tr(p.name)}</span>
+            </button>
+          );
+        })}
+      </div>
+      <p aria-live="polite" className="mt-2 min-h-10 max-w-xs text-center text-sm text-white/85">
+        {open === null ? (
+          tr(st.paddlesLabel)
+        ) : (
+          <>
+            <span className="font-semibold text-white">{tr(st.sevenMeans)}</span> {tr(st.paddles[open].top)}
+          </>
+        )}
+      </p>
+    </figure>
+  );
+}
+
+/** Stage floor, left: the running order. The next round is visible before it starts. */
+function Rounds() {
+  const { tr } = useHome();
+  return (
+    <div className="flex flex-col items-center gap-3 lg:mb-10 lg:items-start">
+      <ol aria-label={tr(st.roundsLabel)} className="flex flex-wrap justify-center gap-2 lg:flex-col lg:items-start lg:gap-3">
+        {st.rounds.map((r, i) => (
+          <li
+            key={i}
+            aria-current={i === 1 ? "step" : undefined}
+            className={`rounded-full px-4 py-2 text-sm font-semibold ${i === 1 ? "bg-white text-night" : "border border-white/35 text-white/85"}`}
+          >
+            {tr(r)}
+          </li>
+        ))}
+      </ol>
+      <p className="max-w-60 text-center text-sm text-white/80 lg:text-left">{tr(st.roundNow)}</p>
+    </div>
+  );
+}
+
+/** Stage right: the podium holds the one action. */
+function Podium() {
+  const { tr, lang, age, setAge, setQuery } = useHome();
+  const [q, setQ] = useState("");
+  const goToContests = () => document.getElementById("contests")?.scrollIntoView({ behavior: "smooth" });
+
+  return (
+    <div className="w-full max-w-md justify-self-end rounded-t-3xl bg-white p-5 text-ink shadow-[0_-12px_40px_-20px_rgba(0,0,0,0.5)]">
+      <h2 id="podium-title" className="font-display text-xl font-semibold">
+        {tr(st.podium)}
+      </h2>
+      <ToggleGroup
+        aria-labelledby="podium-title"
+        value={age ? [age] : []}
+        onValueChange={(v) => {
+          setAge((v[0] as AgeKey) ?? null);
+          if (v[0]) goToContests();
+        }}
+        className="mt-3 grid grid-cols-2 gap-2"
+      >
+        {ages.map((a) => (
+          <Toggle
+            key={a.key}
+            value={a.key}
+            className="min-h-11 rounded-full border border-line bg-white px-3 text-sm font-medium hover:border-indigo data-[pressed]:border-indigo data-[pressed]:bg-indigo data-[pressed]:text-white"
+          >
+            {a.label[lang]}
+          </Toggle>
+        ))}
+      </ToggleGroup>
+      <form
+        role="search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          setQuery(q.trim());
+          goToContests();
+        }}
+        className="mt-3 flex flex-col gap-2"
+      >
+        <label htmlFor="hero-search" className="sr-only">
+          {tr(t.hero.searchBtn)}
+        </label>
+        <input
+          id="hero-search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={tr(t.hero.searchPh)}
+          className="min-h-12 w-full rounded-2xl border border-line bg-paper px-4 outline-none focus:border-indigo"
+        />
+        <button type="submit" className="min-h-13 w-full rounded-full bg-indigo text-lg font-semibold text-white hover:bg-indigo-ink">
+          {tr(st.find)}
+        </button>
+      </form>
+    </div>
   );
 }

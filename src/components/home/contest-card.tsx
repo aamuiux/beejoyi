@@ -28,7 +28,7 @@ export function ContestCard({ c }: { c: Contest }) {
         </span>
         <span
           className={`absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-xs font-bold ${
-            c.fee === 0 ? "bg-honey text-ink" : "bg-ink text-white"
+            c.fee === 0 ? "bg-leaf-ink text-white" : "bg-ink text-white"
           }`}
         >
           {c.fee === 0 ? tr(t.contests.free) : `৳${num(c.fee, lang)}`}

@@ -129,12 +129,12 @@ export function ContestDetail({ id }: { id: string }) {
                 <div
                   key={f.label}
                   className={`rounded-2xl border p-4 ${
-                    f.tone === "free" ? "border-honey bg-honey-wash" : f.tone === "urgent" ? "border-alert/30 bg-alert/5" : "border-line bg-white"
+                    f.tone === "free" ? "border-leaf/40 bg-leaf/5" : f.tone === "urgent" ? "border-alert/30 bg-alert/5" : "border-line bg-white"
                   }`}
                 >
                   <dt className="text-sm text-ink-soft">{f.label}</dt>
                   <dd className={`mt-1 font-display text-lg leading-snug font-semibold ${f.tone === "urgent" ? "text-alert" : ""}`}>{f.value}</dd>
-                  {f.sub && <dd className="mt-0.5 text-xs text-honey-ink">{f.sub}</dd>}
+                  {f.sub && <dd className="mt-0.5 text-xs text-leaf-ink">{f.sub}</dd>}
                 </div>
               ))}
             </dl>
@@ -172,7 +172,7 @@ export function ContestDetail({ id }: { id: string }) {
             {/* Statement of inquiry: the real-world question the whole contest explores */}
             {c.inquiry && (
               <div className="mb-6 max-w-[65ch] rounded-3xl bg-night p-6 text-white">
-                <p className="text-sm font-semibold text-honey">{tr(detail.inquiry)}</p>
+                <p className="text-sm font-semibold text-indigo-wash">{tr(detail.inquiry)}</p>
                 <p className="display mt-2 text-2xl font-bold sm:text-3xl">{tr(c.inquiry)}</p>
               </div>
             )}
@@ -364,7 +364,7 @@ function Rounds({ c }: { c: Contest }) {
               </span>
               <span
                 className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                  state === "now" ? "bg-honey text-ink" : state === "done" ? "bg-leaf/10 text-leaf-ink" : "bg-line text-ink-soft"
+                  state === "now" ? "bg-indigo text-white" : state === "done" ? "bg-leaf/10 text-leaf-ink" : "bg-line text-ink-soft"
                 }`}
               >
                 {tr(detail.roundState[state])}
@@ -419,7 +419,7 @@ function Timeline({ c }: { c: Contest }) {
             {i < detail.timeline.length - 1 && <span aria-hidden className={`absolute top-10 left-5 h-[calc(100%-2.5rem)] w-0.5 ${done ? "bg-indigo" : "bg-line"}`} />}
             <span
               className={`grid size-10 shrink-0 place-items-center rounded-full font-display font-bold ${
-                done ? "bg-indigo text-white" : now ? "bg-honey text-ink ring-4 ring-honey/30" : "border-2 border-line bg-white text-ink-soft"
+                done ? "bg-indigo text-white" : now ? "bg-indigo text-white ring-4 ring-indigo/25" : "border-2 border-line bg-white text-ink-soft"
               }`}
             >
               {done ? "✓" : num(i + 1, lang)}

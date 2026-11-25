@@ -3,63 +3,75 @@
 import { Accordion } from "@base-ui/react/accordion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { leaderboard, num, t } from "@/lib/content";
+import { Scorecard } from "@/components/contests/scorecard";
+import { contests, leaderboard, num, t } from "@/lib/content";
 import { useHome } from "@/lib/home-state";
 import { LangToggle, Logo } from "./site-header";
-import { CertificateArt, JoinArt, SubmitArt } from "./step-art";
 
-/* ---------- Trust strip ---------- */
-export function TrustStrip() {
-  const { tr, lang } = useHome();
+/* ---------- The running order: the show's three rounds, each previewing the next ---------- */
+export function HowItWorks() {
+  const { tr } = useHome();
   return (
-    <section aria-label="Beejoyi in numbers" className="border-y border-line bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-        <dl className="grid grid-cols-2 gap-6 md:grid-cols-4">
-          {t.trust.items.map((s) => (
-            <div key={s.nEn}>
-              <dt className="sr-only">{tr(s.label)}</dt>
-              <dd className="display text-3xl font-bold sm:text-4xl">{lang === "bn" ? s.n : s.nEn}</dd>
-              <dd className="text-ink-soft">{tr(s.label)}</dd>
-            </div>
+    <section aria-labelledby="order-title" className="bg-indigo-wash py-16 sm:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <h2 id="order-title" className="display text-4xl font-bold sm:text-5xl">
+          {tr(t.how.title)}
+        </h2>
+        <p className="mt-2 max-w-xl text-lg text-ink-soft">{tr(t.how.sub)}</p>
+        {/* A printed programme: same round names, same order as the stage */}
+        <ol className="mt-10 border-t-2 border-night">
+          {t.how.order.map((o, i) => (
+            <li key={i} className="grid gap-x-8 gap-y-3 border-b border-night/20 py-7 md:grid-cols-[12rem_1fr_18rem]">
+              {/* "রাউন্ড ১ · শেখো" breaks before the dot, never after it */}
+              <h3 className="display text-night" style={{ fontVariationSettings: '"wdth" 112' }}>
+                {tr(t.stage.rounds[i])
+                  .split(" · ")
+                  .map((part, n) => (
+                    <span key={n} className={n === 0 ? "block text-3xl font-bold whitespace-nowrap sm:text-4xl" : "block text-xl font-semibold text-indigo-ink"}>
+                      {part}
+                    </span>
+                  ))}
+              </h3>
+              <p className="max-w-[55ch] text-lg">{tr(o.d)}</p>
+              <p className="text-ink-soft md:border-l md:border-night/20 md:pl-6">
+                <span className="block text-sm font-semibold text-indigo-ink">{tr(t.how.next)}</span>
+                {tr(o.next)}
+              </p>
+            </li>
           ))}
-        </dl>
-        <p className="mt-4 text-xs text-ink-soft">{tr(t.trust.note)}</p>
+        </ol>
       </div>
     </section>
   );
 }
 
-/* ---------- How it works (a real sequence, so it is numbered) ---------- */
-export function HowItWorks() {
+/* ---------- Judges' table: open, blind, 1–7, a scorecard for all ---------- */
+export function JudgesTable() {
   const { tr, lang } = useHome();
-  // Each step shows the real moment (recognition over recall); colours follow the hero stages,
-  // with honey on the last step because it is the reward.
-  const panels = ["#DCDBFD", "#CDEBDA", "#FFE3A1"];
-  const art = [
-    <JoinArt key="join" cta={tr(t.how.art.join)} />,
-    <SubmitArt key="submit" done={tr(t.how.art.uploaded)} />,
-    <CertificateArt key="cert" name={tr(t.how.art.name)} title={tr(t.how.art.certificate)} />,
-  ];
+  const sample = contests.find((c) => c.id === "c17")!;
   return (
-    <section className="bg-indigo-wash py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <h2 className="display text-4xl font-bold sm:text-5xl">{tr(t.how.title)}</h2>
-        <ol className="mt-10 grid gap-6 md:grid-cols-3">
-          {t.how.steps.map((s, i) => (
-            <li key={i} className="overflow-hidden rounded-3xl bg-white">
-              <div className="relative aspect-[16/10] p-4 sm:p-6 md:aspect-[4/3]" style={{ backgroundColor: panels[i] }}>
-                {art[i]}
-                <span className="display absolute top-4 left-4 grid size-12 place-items-center rounded-full bg-indigo text-xl font-bold text-white shadow-[0_6px_16px_-6px_rgba(36,34,110,0.6)]">
-                  {num(i + 1, lang)}
+    <section id="judging" aria-labelledby="judges-title" className="bg-night py-16 text-white sm:py-24">
+      <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+        <div>
+          <h2 id="judges-title" className="display text-4xl font-bold sm:text-5xl">
+            {tr(t.judges.title)}
+          </h2>
+          <p className="mt-3 max-w-lg text-lg text-white/80">{tr(t.judges.sub)}</p>
+          <ol className="mt-8 space-y-6">
+            {t.judges.points.map((p, i) => (
+              <li key={i} className="flex gap-4">
+                <span className="display grid size-12 shrink-0 place-items-center rounded-full bg-white text-2xl font-bold text-night">
+                  {num(i + 5, lang)}
                 </span>
-              </div>
-              <div className="p-5 sm:p-6">
-                <h3 className="font-display text-2xl font-semibold">{tr(s.t)}</h3>
-                <p className="mt-1.5 text-ink-soft">{tr(s.d)}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+                <div>
+                  <h3 className="font-display text-xl font-semibold">{tr(p.t)}</h3>
+                  <p className="mt-1 max-w-md text-white/75">{tr(p.d)}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <Scorecard c={sample} compact />
       </div>
     </section>
   );
@@ -74,7 +86,7 @@ function GameArt({ k }: { k: string }) {
           <span
             key={n}
             className="grid aspect-square place-items-center rounded-md text-xs font-bold"
-            style={{ background: n >= 512 ? "#FFC329" : n >= 64 ? "#6563F1" : "#ECEBFE", color: n >= 64 && n < 512 ? "#fff" : "#1E1E2E" }}
+            style={{ background: n >= 512 ? "#24226E" : n >= 64 ? "#6563F1" : "#ECEBFE", color: n >= 64 ? "#fff" : "#1E1E2E" }}
           >
             {n}
           </span>
@@ -114,10 +126,17 @@ function GameArt({ k }: { k: string }) {
       </div>
     );
   return (
-    <div className="flex items-center justify-center gap-1 text-2xl sm:gap-3 sm:text-4xl" aria-hidden>
-      <span className="-rotate-12">✊</span>
-      <span>✋</span>
-      <span className="rotate-12">✌️</span>
+    <div className="flex items-center justify-center gap-2 text-ink sm:gap-4" aria-hidden>
+      {/* rock, paper, scissors: drawn in one stroke weight, like the other boards */}
+      <svg viewBox="0 0 32 32" className="w-1/4 -rotate-12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+        <path d="M9 14v-2a2 2 0 0 1 4 0v-1a2 2 0 0 1 4 0v1a2 2 0 0 1 4 0v1a2 2 0 0 1 4 0v6a8 8 0 0 1-8 8h-1a7 7 0 0 1-7-7v-3a2 2 0 0 1 4 0" fill="#ECEBFE" />
+      </svg>
+      <svg viewBox="0 0 32 32" className="w-1/4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+        <path d="M10 17V7a2 2 0 0 1 4 0v8V5a2 2 0 0 1 4 0v10V7a2 2 0 0 1 4 0v10-5a2 2 0 0 1 4 0v8a9 9 0 0 1-9 9h-1a8 8 0 0 1-6.5-3.4L6 21a2 2 0 0 1 3-2.6l1 1.1" fill="#DCDBFD" />
+      </svg>
+      <svg viewBox="0 0 32 32" className="w-1/4 rotate-12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+        <path d="M13 16 9 5a2 2 0 0 1 3.8-1.2L16 13l2-10a2 2 0 0 1 4 .6L20 15h2a3 3 0 0 1 3 3v3a8 8 0 0 1-8 8h-1a7 7 0 0 1-7-7v-2a2 2 0 0 1 4-1" fill="#ECEBFE" />
+      </svg>
     </div>
   );
 }
@@ -141,7 +160,7 @@ export function GamesSection() {
                   </div>
                   <h3 className="mt-3 font-display text-lg font-semibold">{tr(g.name)}</h3>
                   <p className="text-sm text-ink-soft">{tr(g.d)}</p>
-                  <span className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-honey font-semibold text-ink group-hover:bg-[#ffb800]">
+                  <span className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-indigo-wash font-semibold text-indigo-ink group-hover:bg-indigo group-hover:text-white">
                     {tr(t.games.play)}
                   </span>
                 </a>
@@ -234,6 +253,10 @@ export function ShowcaseSection() {
                   <span className="inline-block rounded-full bg-honey px-2.5 py-0.5 text-xs font-bold text-ink">{tr(s.place)}</span>
                   <p className="mt-2 font-semibold">{tr(s.who)}</p>
                   <p className="text-sm text-ink-soft">{tr(s.what)}</p>
+                  <p className="mt-3 border-t border-line pt-3 text-sm">
+                    <span className="block font-semibold text-ink-soft">{tr(t.showcase.noteLabel)}</span>
+                    {tr(s.note)}
+                  </p>
                 </figcaption>
               </figure>
             </li>
@@ -284,7 +307,7 @@ export function ParentsSection() {
 /* ---------- B2B band ---------- */
 function Check() {
   return (
-    <svg viewBox="0 0 20 20" className="mt-1 size-5 shrink-0 text-honey" aria-hidden>
+    <svg viewBox="0 0 20 20" className="mt-1 size-5 shrink-0 text-indigo-wash" aria-hidden>
       <path d="M4 10l4 4 8-8" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -326,7 +349,7 @@ export function B2BBand() {
                 </li>
               ))}
             </ul>
-            <a href="#partners" className="mt-8 inline-flex min-h-12 items-center rounded-full bg-honey px-6 font-semibold text-ink hover:bg-[#ffb800]">
+            <a href="#partners" className="mt-8 inline-flex min-h-12 items-center rounded-full bg-white px-6 font-semibold text-night hover:bg-indigo-wash">
               {tr(t.b2b.brand.cta)}
             </a>
           </div>
@@ -350,7 +373,9 @@ export function FaqSection() {
                 <Accordion.Trigger className="group flex w-full items-center justify-between gap-6 py-5 text-left font-display text-xl font-semibold">
                   {tr(f.q)}
                   <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-indigo-wash text-indigo-ink transition-transform group-data-[panel-open]:rotate-45">
-                    +
+                    <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
                   </span>
                 </Accordion.Trigger>
               </Accordion.Header>
@@ -369,13 +394,21 @@ export function FaqSection() {
 export function FinalCta() {
   const { tr } = useHome();
   return (
-    <section id="join" className="px-4 pb-16 sm:px-6">
-      <div className="mx-auto max-w-7xl rounded-[2rem] bg-honey px-6 py-14 text-center sm:py-20">
-        <h2 className="display text-4xl font-bold sm:text-6xl">{tr(t.final.title)}</h2>
-        <p className="mx-auto mt-4 max-w-md text-lg text-ink/80">{tr(t.final.sub)}</p>
-        <a href="#signup" className="mt-8 inline-flex min-h-14 items-center rounded-full bg-ink px-8 text-lg font-semibold text-white hover:bg-night">
-          {tr(t.nav.join)}
-        </a>
+    <section id="join" aria-labelledby="curtain-title" className="relative isolate overflow-hidden bg-navy text-white">
+      <div aria-hidden className="curtain absolute inset-0 -z-10" />
+      <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 sm:py-28">
+        <h2 id="curtain-title" className="display text-5xl font-bold text-balance sm:text-7xl" style={{ fontVariationSettings: '"wdth" 118' }}>
+          {tr(t.curtain.title)}
+        </h2>
+        <p className="mx-auto mt-5 max-w-lg text-lg text-white/85">{tr(t.curtain.sub)}</p>
+        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <a href="#signup" className="inline-flex min-h-14 items-center rounded-full bg-white px-8 text-lg font-semibold text-night hover:bg-indigo-wash">
+            {tr(t.nav.join)}
+          </a>
+          <Link href="/contests" className="inline-flex min-h-14 items-center rounded-full px-6 text-lg font-semibold text-white underline-offset-4 hover:underline">
+            {tr(t.curtain.browse)}
+          </Link>
+        </div>
       </div>
     </section>
   );

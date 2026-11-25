@@ -6,22 +6,24 @@ import {
   FinalCta,
   GamesSection,
   HowItWorks,
+  JudgesTable,
   ParentsSection,
   ShowcaseSection,
-  TrustStrip,
 } from "@/components/home/sections";
 
-// Section order follows docs/homepage-strategy.md (serial position: find a contest first, join last).
+// The stage (direction contract: .impeccable/surfaces/src-app-page-tsx.md).
+// Order: the stage and its action, tonight's contests, the rounds, the open judging,
+// winners with their thinking, then parents, games, organisers, questions, curtain call.
 export default function Home() {
   return (
     <main>
       <Hero />
-      <TrustStrip />
       <ContestsSection />
       <HowItWorks />
-      <GamesSection />
+      <JudgesTable />
       <ShowcaseSection />
       <ParentsSection />
+      <GamesSection />
       <B2BBand />
       <FaqSection />
       <FinalCta />

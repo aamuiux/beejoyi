@@ -14,7 +14,8 @@ import { useHome } from "@/lib/home-state";
 
 const sc = detail.scorecard;
 
-export function Scorecard({ c }: { c: Contest }) {
+/** compact: the card alone (no intro line or action buttons), for showing it as an example. */
+export function Scorecard({ c, compact }: { c: Contest; compact?: boolean }) {
   const { tr, lang } = useHome();
   const [copied, setCopied] = useState(false);
   const rubric = formatGuides[c.format].rubric;
@@ -23,9 +24,9 @@ export function Scorecard({ c }: { c: Contest }) {
 
   return (
     <div>
-      <p className="max-w-[65ch] text-ink-soft">{tr(sc.sub)}</p>
+      {!compact && <p className="max-w-[65ch] text-ink-soft">{tr(sc.sub)}</p>}
 
-      <article className="mt-5 max-w-2xl overflow-hidden rounded-3xl border border-line bg-white shadow-[0_18px_40px_-28px_rgba(24,31,56,0.45)]">
+      <article className={`${compact ? "" : "mt-5"} max-w-2xl overflow-hidden rounded-3xl border border-line bg-white text-ink shadow-[0_18px_40px_-28px_rgba(24,31,56,0.45)]`}>
         {/* Header: the credential itself */}
         <header className="flex items-start justify-between gap-4 bg-navy px-5 py-4 text-white sm:px-6">
           <div className="min-w-0">
@@ -89,6 +90,7 @@ export function Scorecard({ c }: { c: Contest }) {
         </footer>
       </article>
 
+      {!compact && (
       <div className="mt-4 flex max-w-2xl flex-wrap gap-2">
         <button
           type="button"
@@ -118,6 +120,7 @@ export function Scorecard({ c }: { c: Contest }) {
           {tr(sc.share)}
         </a>
       </div>
+      )}
     </div>
   );
 }
