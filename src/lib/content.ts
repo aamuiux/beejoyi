@@ -299,13 +299,12 @@ export const t = {
     },
     line2: { bn: "জিতে নাও সার্টিফিকেট আর পুরস্কার", en: "and win certificates and prizes" },
     sub: {
-      bn: "প্রি-স্কুল থেকে বিশ্ববিদ্যালয়: বাংলাদেশের শিক্ষার্থীদের জন্য কনটেস্ট আর গেম, এক জায়গায়।",
-      en: "From preschool to university: contests and games for every student in Bangladesh, in one place.",
+      bn: "প্রি-স্কুল থেকে বিশ্ববিদ্যালয়, সবার জন্য কনটেস্ট আর গেম।",
+      en: "Contests and games for every student, preschool to university.",
     },
     searchPh: { bn: "আঁকা, কুইজ, আবৃত্তি… খুঁজে দেখো", en: "Search drawing, quiz, recitation…" },
     searchBtn: { bn: "কনটেস্ট খোঁজো", en: "Find contests" },
-    play: { bn: "এখনই খেলো, সাইন-আপ লাগবে না", en: "Play now, no sign-up needed" },
-    iam: { bn: "কার জন্য খুঁজছেন?", en: "Who is it for?" },
+    iam: { bn: "কার জন্য:", en: "For:" },
   },
   trust: {
     note: { bn: "সংখ্যাগুলো যাচাইয়ের অপেক্ষায় (নমুনা)", en: "Numbers awaiting verification (sample)" },

@@ -60,20 +60,6 @@ body {
   animation: verb-in 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-/* Gentle drift for pinned posters */
-@keyframes drift {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-  50% {
-    translate: 0 -8px;
-  }
-}
-.drift {
-  animation: drift 7s ease-in-out infinite;
-}
-
 .no-scrollbar {
   scrollbar-width: none;
 }
@@ -85,8 +71,7 @@ body {
   html {
     scroll-behavior: auto;
   }
-  .verb-in,
-  .drift {
+  .verb-in {
     animation: none;
   }
 }
