@@ -5,15 +5,16 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ContestCard } from "@/components/home/contest-card";
 import { PosterArt } from "@/components/home/poster-art";
-import { ages, contests, detail, num, statusOf, subjectGuides, t, type Contest } from "@/lib/content";
+import { ages, contests, detail, num, statusOf, formatGuides, t, type Contest } from "@/lib/content";
 import { useHome } from "@/lib/home-state";
-import { JoinDialog } from "./join-dialog";
+import { JoinDialog, joinLabel } from "./join-dialog";
+import { Winners } from "./winner-entry";
 
 export function ContestDetail({ id }: { id: string }) {
   const { tr, lang } = useHome();
   const c = contests.find((x) => x.id === id)!;
   const status = statusOf(c);
-  const guide = subjectGuides[c.cat];
+  const guide = formatGuides[c.format];
   const [joinOpen, setJoinOpen] = useState(false);
   const [reminded, setReminded] = useState(false);
 
@@ -53,7 +54,7 @@ export function ContestDetail({ id }: { id: string }) {
         onClick={() => setJoinOpen(true)}
         className="min-h-13 w-full rounded-full bg-indigo px-6 text-lg font-semibold text-white hover:bg-indigo-ink"
       >
-        {c.fee === 0 ? tr(detail.cta.joinFree) : lang === "bn" ? `${fee} ${tr(detail.cta.joinPaid)}` : `Pay ${fee} ${tr(detail.cta.joinPaid)}`}
+        {joinLabel(c, tr, lang)}
       </button>
     ) : status === "upcoming" ? (
       <button
@@ -138,21 +139,7 @@ export function ContestDetail({ id }: { id: string }) {
         <div className="min-w-0 space-y-14">
           {status === "ended" && (
             <Section id="winners" title={tr(detail.sections.winners)}>
-              <ol className="space-y-3">
-                {detail.winnersList.map((w, i) => (
-                  <li key={i} className={`flex items-center gap-4 rounded-2xl border p-4 ${i === 0 ? "border-honey bg-honey-wash" : "border-line bg-white"}`}>
-                    <span className={`grid size-12 shrink-0 place-items-center rounded-full font-display font-bold ${i === 0 ? "bg-honey text-ink" : "bg-paper text-ink-soft"}`}>
-                      {tr(w.place)}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-semibold">{tr(w.name)}</span>
-                      <span className="block text-sm text-ink-soft">{tr(w.cls)}</span>
-                    </span>
-                    <span className="font-display text-xl font-semibold">{num(w.score, lang)}</span>
-                  </li>
-                ))}
-              </ol>
-              <p className="mt-3 text-xs text-ink-soft">{tr(detail.winnersNote)}</p>
+              <Winners c={c} />
             </Section>
           )}
 

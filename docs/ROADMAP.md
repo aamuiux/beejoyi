@@ -1,6 +1,6 @@
 # Beejoyi redesign roadmap
 
-Last updated: 25 Nov 2026
+Last updated: 26 Nov 2026
 
 ## Done ✅
 
@@ -12,6 +12,13 @@ Last updated: 25 Nov 2026
 | 4 | Entry submission | `/contests/[id]/submit` | [submission-strategy.md](submission-strategy.md) |
 
 The student journey works end to end: **discover → filter → read → join (pay) → submit → receipt.**
+
+Since then (26 Nov 2026):
+- **Audience is preschool to HSC.** The university age group was removed.
+- **Five contest formats:** quiz, photo, video, audio and debate. Each format has its own rules, uploads, join flow and winner cards. Debate teams of three register together and win as a team.
+- **Contest cards:** every card has a full-width action button.
+- **Winners:** they sit side by side and show the winning photo, video or audio.
+- **Homepage:** set in Anek Bangla, with a picture for each step of "কীভাবে কাজ করে".
 
 ## Next, in this order ⏭️
 

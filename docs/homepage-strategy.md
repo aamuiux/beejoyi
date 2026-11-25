@@ -7,7 +7,7 @@
 |---|---|
 | Who the homepage serves first | Students and their parents. Institutions, brands and investors get a clear path, plus their own pages. |
 | Language | Bangla by default with a one-tap English toggle. B2B and investor pages are English-first. |
-| Accounts for young children | A parent account with child profiles. Teens and university students have their own accounts. |
+| Accounts for young children | A parent account with child profiles. Teens (class 6 to HSC) have their own accounts. |
 | Entry fees | A mix of free and paid. Paid entries use bKash, Nagad or card. |
 | Games | Casual, instant play with no sign-up, plus weekly leaderboards. |
 | Brand | Keep the logo and colours (indigo `#6563F1`, yellow `#FFC329`). Refresh the type, layout and illustration. |
@@ -28,7 +28,6 @@ Everything else is secondary. B2B (schools, clubs, brands) and investors are ser
 |---|---|---|---|
 | Parent of a 4–10 year old | Facebook post, school notice, WhatsApp | "Is there something for my child? Is it safe? What does it cost?" | Age chip **"Preschool"** or **"Class 1–5"** → filtered contests → Free/৳ badge → safety block |
 | Student, Class 6–12 | Friend's share, school | "What can I join? What do I win?" | Hero search or age chip → contest cards with prize and deadline |
-| University student | Club page, LinkedIn | Competitions with prizes and CV value, brand challenges | "University" chip → contests; "Certificate" proof |
 | Kid with nothing to do | Returning visitor | Fun | **"Play now"** in the hero → games, with no sign-up |
 | Teacher / club / school admin | Brochure, sales call | "Can I run our contest here?" | Nav link **"For institutions"** → B2B band → `/for-institutions` |
 | Brand / CSR team | Pitch deck, referral | Reach, safety, measurable results | B2B band → **"Partner with us"** |
@@ -60,7 +59,7 @@ Order follows the **serial position effect**: the most important action comes fi
 ├ 1  HERO (Luma-style): what it is + who it's for + 2 actions
 │     "আঁকো · লেখো · বলো · কোড করো · খেলো, জিতে নাও সার্টিফিকেট আর পুরস্কার"  (rotating verb)
 │     Search  [কনটেস্ট খুঁজুন]   secondary: [এখনই খেলো: সাইন-আপ লাগবে না]
-│     "I'm…" age chips: Preschool · Class 1–5 · Class 6–10 · SSC/HSC · University
+│     "I'm…" age chips: Preschool · Class 1–5 · Class 6–10 · SSC/HSC
 │     Floating cards on desktop = real live contests (clickable), like Luma's floating posters
 │
 ├ 2  TRUST STRIP: students · contests run · schools · ৳ prizes given (verified numbers) + partner logos
@@ -102,7 +101,7 @@ Order follows the **serial position effect**: the most important action comes fi
 What we take from Luma: a short, **huge headline with one coloured, rotating word**; lots of white space; **one dark primary button with a quiet secondary link**; and **floating cards that show real content**, so the page *demonstrates* what it is instead of describing it.
 
 - **Headline (BN):** *আঁকো, লেখো, বলো, খেলো, জিতে নাও* (the verb rotates every 2.5 s). Under `prefers-reduced-motion` it stays static.
-- **Sub-line:** *প্রি-স্কুল থেকে বিশ্ববিদ্যালয়: বাংলাদেশের শিক্ষার্থীদের জন্য কনটেস্ট, গেম আর সার্টিফিকেট, এক জায়গায়।*
+- **Sub-line:** *প্রি-স্কুল থেকে এইচএসসি: বাংলাদেশের শিক্ষার্থীদের জন্য কনটেস্ট, গেম আর সার্টিফিকেট, এক জায়গায়।*
 - **Primary:** search field + **কনটেস্ট খুঁজুন** button. **Secondary:** *এখনই খেলো →* (games, no sign-up).
 - **Age chips** ("আমি…") filter section 3 in place and remember the choice, so a parent clicks once and every card fits.
 - The floating cards on desktop are live contests. On mobile they collapse to one horizontal strip under the chips.
@@ -181,8 +180,8 @@ Repeat the primary action (**serial position**): *বিনামূল্যে
 ## 5. Visual direction
 
 - **Colour:** Indigo `#6563F1` is the primary (actions, links). Yellow `#FFC329` is for **reward signals only** (prizes, "Free", winners), so it keeps its meaning. A crimson-red accent appears **only** for "ending soon". Near-white background, deep ink text `#1E1E2E`.
-- **Type:** **Anek Bangla** for headlines (friendly, rounded, strong in Bangla) and **Hind Siliguri** for body. Both render Bangla and Latin well. Bangla body text needs ~1.7 line-height.
-- **Shape:** Soft 16–24 px radii, chunky buttons (min 48 px tall), playful but not childish, so a university student doesn't feel it's "for kids".
+- **Type:** **Anek Bangla** for everything (friendly, rounded, strong in Bangla and Latin). Headlines use its wider width setting; body text stays at normal width. Bangla body text needs ~1.7 line-height.
+- **Shape:** Soft 16–24 px radii, chunky buttons (min 48 px tall), playful but not childish, so an HSC student doesn't feel it's "for kids".
 - **Motion:** The rotating hero word and gentle floating cards only. Respect `prefers-reduced-motion`. No marquees.
 - **Imagery:** Real Bangladeshi kids, real submissions and real school logos. No Western stock photography.
 

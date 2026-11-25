@@ -8,7 +8,24 @@ import { useState } from "react";
 import { ages, childProfiles, detail, num, t, type Contest } from "@/lib/content";
 import { useHome } from "@/lib/home-state";
 
-type Step = "who" | "pay" | "done";
+type Step = "who" | "team" | "pay" | "done";
+type Member = { name: string; phone: string };
+
+const BN = "০১২৩৪৫৬৭৮৯";
+/** Accept Bangla digits, spaces, dashes and +880 (Postel), then check it's a BD mobile number. */
+const normalPhone = (v: string) => {
+  const d = v.replace(/[০-৯]/g, (x) => String(BN.indexOf(x))).replace(/\D/g, "");
+  return d.startsWith("880") ? `0${d.slice(3)}` : d;
+};
+const phoneOk = (v: string) => /^01[3-9]\d{8}$/.test(normalPhone(v));
+
+/** The join button's label, shared by the card and the detail page. */
+export function joinLabel(c: Contest, tr: (l: { bn: string; en: string }) => string, lang: "bn" | "en") {
+  const fee = `৳${num(c.fee, lang)}`;
+  if (c.format === "debate" && c.fee === 0) return tr(detail.join.team.cta);
+  if (c.fee === 0) return tr(detail.cta.joinFree);
+  return lang === "bn" ? `${fee} ${tr(detail.cta.joinPaid)}` : `Pay ${fee} ${tr(detail.cta.joinPaid)}`;
+}
 type Method = "bkash" | "nagad" | "card";
 
 const methodStyle: Record<Method, string> = {
@@ -31,14 +48,36 @@ export function JoinDialog({
   const fits = (p: (typeof childProfiles)[number]) => c.ages.includes(p.age);
   const firstFit = childProfiles.find(fits)?.id ?? "";
 
-  const [step, setStep] = useState<Step>("who");
+  const debate = c.format === "debate";
+  const first: Step = debate ? "team" : "who";
+  const tm = detail.join.team;
+
+  const [step, setStep] = useState<Step>(first);
+  const [team, setTeam] = useState({ name: "", school: "" });
+  const [members, setMembers] = useState<Member[]>([
+    { name: "", phone: "" },
+    { name: "", phone: "" },
+    { name: "", phone: "" },
+  ]);
+  const [tried, setTried] = useState(false);
   const [who, setWho] = useState<string>(firstFit);
   const [method, setMethod] = useState<Method>("bkash");
 
   const total = paid ? 3 : 2;
-  const index = step === "who" ? 1 : step === "pay" ? 2 : total;
+  const index = step === "who" || step === "team" ? 1 : step === "pay" ? 2 : total;
+
+  // Team form: errors appear only after the first attempt, next to the field that needs fixing.
+  const errs = {
+    name: !team.name.trim(),
+    school: !team.school.trim(),
+    members: members.map((m, i) => ({ name: !m.name.trim(), phone: i > 0 && !phoneOk(m.phone) })),
+  };
+  const teamOk = !errs.name && !errs.school && errs.members.every((m) => !m.name && !m.phone);
+  const setMember = (i: number, patch: Partial<Member>) =>
+    setMembers((l) => l.map((m, n) => (n === i ? { ...m, ...patch } : m)));
   const fee = `৳${num(c.fee, lang)}`;
   const person = childProfiles.find((p) => p.id === who);
+  const payer = debate ? team.name : person ? tr(person.name) : "";
   const allowed = c.ages.map((a) => ages.find((x) => x.key === a)!.label[lang]).join(", ");
 
   return (
@@ -46,7 +85,7 @@ export function JoinDialog({
       open={open}
       onOpenChange={(o) => {
         onOpenChange(o);
-        if (!o) setTimeout(() => setStep("who"), 200); // reset after the close animation
+        if (!o) setTimeout(() => (setStep(first), setTried(false)), 200); // reset after the close animation
       }}
     >
       <Dialog.Portal>
@@ -62,7 +101,7 @@ export function JoinDialog({
                 </p>
               )}
               <Dialog.Title className="font-display text-2xl font-semibold">
-                {step === "who" ? tr(detail.join.title) : step === "pay" ? tr(detail.join.payTitle) : `🎉 ${tr(detail.join.doneTitle)}`}
+                {step === "who" ? tr(detail.join.title) : step === "team" ? tr(tm.title) : step === "pay" ? tr(detail.join.payTitle) : `🎉 ${tr(detail.join.doneTitle)}`}
               </Dialog.Title>
             </div>
             <Dialog.Close aria-label="Close" className="grid size-11 shrink-0 place-items-center rounded-full hover:bg-indigo-wash">
@@ -71,6 +110,83 @@ export function JoinDialog({
               </svg>
             </Dialog.Close>
           </div>
+
+          {/* Step 1 (debate): register a team of three. Wins go to the whole team. */}
+          {step === "team" && (
+            <form
+              noValidate
+              onSubmit={(ev) => {
+                ev.preventDefault();
+                setTried(true);
+                if (teamOk) setStep(paid ? "pay" : "done");
+                else {
+                  // Move focus to the first field that needs fixing (errors render on the next paint).
+                  const bad = [
+                    errs.name && "team-name",
+                    errs.school && "team-school",
+                    ...errs.members.flatMap((m, i) => [m.name && `m${i}-name`, m.phone && `m${i}-phone`]),
+                  ].find(Boolean);
+                  if (bad) document.getElementById(bad)?.focus();
+                }
+              }}
+              className="mt-5 space-y-4"
+            >
+              <Field
+                id="team-name"
+                label={tr(tm.name)}
+                value={team.name}
+                onChange={(v) => setTeam({ ...team, name: v })}
+                error={tried && errs.name ? tr(tm.errName) : undefined}
+              />
+              <Field
+                id="team-school"
+                label={tr(tm.school)}
+                hint={tr(tm.schoolHint)}
+                value={team.school}
+                onChange={(v) => setTeam({ ...team, school: v })}
+                error={tried && errs.school ? tr(tm.errSchool) : undefined}
+              />
+              <fieldset>
+                <legend className="font-semibold">{tr(tm.members)}</legend>
+                <ol className="mt-2 space-y-3">
+                  {members.map((m, i) => (
+                    <li key={i} className="rounded-2xl border border-line p-3">
+                      <p className="mb-2 text-sm font-semibold text-indigo-ink">
+                        {i === 0 ? tr(tm.captain) : `${tr(tm.member)} ${num(i + 1, lang)}`}
+                      </p>
+                      <div className="space-y-2">
+                        <Field
+                          id={`m${i}-name`}
+                          label={tr(tm.memberName)}
+                          value={m.name}
+                          onChange={(v) => setMember(i, { name: v })}
+                          error={tried && errs.members[i].name ? tr(tm.errMember) : undefined}
+                          compact
+                        />
+                        {i === 0 ? (
+                          <p className="text-xs text-ink-soft">{tr(tm.captainPhone)}</p>
+                        ) : (
+                          <Field
+                            id={`m${i}-phone`}
+                            label={tr(tm.phone)}
+                            value={m.phone}
+                            onChange={(v) => setMember(i, { phone: v })}
+                            error={tried && errs.members[i].phone ? tr(tm.errPhone) : undefined}
+                            type="tel"
+                            placeholder="01XXXXXXXXX"
+                            compact
+                          />
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </fieldset>
+              <button type="submit" className="min-h-13 w-full rounded-full bg-indigo text-lg font-semibold text-white hover:bg-indigo-ink">
+                {paid ? tr(detail.join.next) : tr(tm.register)}
+              </button>
+            </form>
+          )}
 
           {/* Step 1: who is joining. Ineligible profiles are disabled with the reason. */}
           {step === "who" && (
@@ -126,8 +242,8 @@ export function JoinDialog({
               <div className="mt-5 flex items-baseline justify-between rounded-2xl bg-paper p-4">
                 <span className="text-ink-soft">
                   {lang === "bn"
-                    ? `${tr(detail.join.payFor)} (${person ? tr(person.name) : ""})`
-                    : `${tr(detail.join.payFor)} ${person ? tr(person.name) : ""}`}
+                    ? `${tr(detail.join.payFor)} (${payer})`
+                    : `${tr(detail.join.payFor)} ${payer}`}
                 </span>
                 <span className="font-display text-2xl font-semibold">{fee}</span>
               </div>
@@ -148,7 +264,7 @@ export function JoinDialog({
               </RadioGroup>
               <p className="mt-3 text-xs text-ink-soft">{tr(detail.join.mock)}</p>
               <div className="mt-6 flex gap-3">
-                <button type="button" onClick={() => setStep("who")} className="min-h-13 rounded-full px-5 font-semibold text-ink-soft hover:text-ink">
+                <button type="button" onClick={() => setStep(first)} className="min-h-13 rounded-full px-5 font-semibold text-ink-soft hover:text-ink">
                   {tr(detail.join.back)}
                 </button>
                 {/* The amount and method are repeated on the button */}
@@ -172,25 +288,108 @@ export function JoinDialog({
                 🏆
               </div>
               <p className="text-lg">
-                <strong>{person && tr(person.name)}</strong>, {tr(c.title)}
+                <strong>{debate ? team.name : person && tr(person.name)}</strong>, {tr(c.title)}
               </p>
-              <p className="mt-3 text-ink-soft">
-                {tr(detail.join.doneBody)}{" "}
-                <strong className="text-alert">
-                  {c.daysLeft <= 1 ? tr(t.contests.lastDay) : `${num(c.daysLeft, lang)} ${tr(t.contests.daysLeft)}`}
-                </strong>
-              </p>
-              <Link
-                href={`/contests/${c.id}/submit`}
-                className="mt-6 flex min-h-13 w-full items-center justify-center rounded-full bg-indigo text-lg font-semibold text-white hover:bg-indigo-ink"
-              >
-                {tr(detail.join.submit)}
-              </Link>
-              <Dialog.Close className="mt-2 min-h-11 w-full font-semibold text-ink-soft hover:text-ink">{tr(detail.join.later)}</Dialog.Close>
+              {c.format === "quiz" ? (
+                <>
+                  {/* Quiz: nothing to submit; the one thing to remember is when it starts */}
+                  <p className="mt-3 text-ink-soft">{tr(detail.join.quizBody)}</p>
+                  <p className="display mt-2 rounded-2xl bg-indigo-wash p-4 text-xl font-bold text-indigo-ink">
+                    {c.quizAt ? tr(c.quizAt) : tr(detail.join.quizSoon)}
+                  </p>
+                  <p className="mt-3 text-sm text-ink-soft">{tr(detail.join.quizRemind)}</p>
+                  <Dialog.Close className="mt-6 min-h-13 w-full rounded-full bg-indigo text-lg font-semibold text-white hover:bg-indigo-ink">
+                    {tr(detail.join.ok)}
+                  </Dialog.Close>
+                </>
+              ) : debate ? (
+                <>
+                  <ul className="mt-4 flex flex-wrap justify-center gap-2">
+                    {members.map((m, i) => (
+                      <li key={i} className="rounded-full bg-paper px-3 py-1 text-sm font-semibold">
+                        {m.name}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-3 text-ink-soft">{tr(tm.doneBody)}</p>
+                  <Dialog.Close className="mt-6 min-h-13 w-full rounded-full bg-indigo text-lg font-semibold text-white hover:bg-indigo-ink">
+                    {tr(detail.join.ok)}
+                  </Dialog.Close>
+                </>
+              ) : (
+                <>
+                  <p className="mt-3 text-ink-soft">
+                    {tr(detail.join.doneBody)}{" "}
+                    <strong className="text-alert">
+                      {c.daysLeft <= 1 ? tr(t.contests.lastDay) : `${num(c.daysLeft, lang)} ${tr(t.contests.daysLeft)}`}
+                    </strong>
+                  </p>
+                  <Link
+                    href={`/contests/${c.id}/submit`}
+                    className="mt-6 flex min-h-13 w-full items-center justify-center rounded-full bg-indigo text-lg font-semibold text-white hover:bg-indigo-ink"
+                  >
+                    {tr(detail.join.submit)}
+                  </Link>
+                  <Dialog.Close className="mt-2 min-h-11 w-full font-semibold text-ink-soft hover:text-ink">{tr(detail.join.later)}</Dialog.Close>
+                </>
+              )}
             </div>
           )}
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>
+  );
+}
+
+function Field({
+  id,
+  label,
+  value,
+  onChange,
+  error,
+  hint,
+  type = "text",
+  placeholder,
+  compact,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  error?: string;
+  hint?: string;
+  type?: string;
+  placeholder?: string;
+  compact?: boolean;
+}) {
+  const describedBy = [hint && `${id}-hint`, error && `${id}-err`].filter(Boolean).join(" ") || undefined;
+  return (
+    <div>
+      <label htmlFor={id} className={compact ? "text-sm text-ink-soft" : "font-semibold"}>
+        {label}
+      </label>
+      {hint && (
+        <p id={`${id}-hint`} className="text-xs text-ink-soft">
+          {hint}
+        </p>
+      )}
+      <input
+        id={id}
+        type={type}
+        inputMode={type === "tel" ? "tel" : undefined}
+        autoComplete={type === "tel" ? "tel" : "off"}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy}
+        className="mt-1 min-h-12 w-full rounded-xl border border-line bg-white px-3 text-base outline-none focus:border-indigo aria-[invalid=true]:border-alert"
+      />
+      {error && (
+        <p id={`${id}-err`} className="mt-1 text-sm font-semibold text-alert">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }

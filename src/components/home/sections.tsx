@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { leaderboard, num, t } from "@/lib/content";
 import { useHome } from "@/lib/home-state";
 import { LangToggle, Logo } from "./site-header";
+import { CertificateArt, JoinArt, SubmitArt } from "./step-art";
 
 /* ---------- Trust strip ---------- */
 export function TrustStrip() {
@@ -31,22 +32,30 @@ export function TrustStrip() {
 /* ---------- How it works (a real sequence, so it is numbered) ---------- */
 export function HowItWorks() {
   const { tr, lang } = useHome();
+  // Each step shows the real moment (recognition over recall); colours follow the hero stages,
+  // with honey on the last step because it is the reward.
+  const panels = ["#DCDBFD", "#CDEBDA", "#FFE3A1"];
+  const art = [
+    <JoinArt key="join" cta={tr(t.how.steps[0].t)} />,
+    <SubmitArt key="submit" done={tr(t.how.art.uploaded)} />,
+    <CertificateArt key="cert" name={tr(t.how.art.name)} title={tr(t.how.art.certificate)} />,
+  ];
   return (
     <section className="bg-indigo-wash py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <h2 className="display text-4xl font-bold sm:text-5xl">{tr(t.how.title)}</h2>
-        <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-6">
+        <ol className="mt-10 grid gap-6 md:grid-cols-3">
           {t.how.steps.map((s, i) => (
-            <li key={i} className="relative flex gap-4 md:flex-col">
-              <span className="display grid size-14 shrink-0 place-items-center rounded-full bg-indigo text-2xl font-bold text-white">
-                {num(i + 1, lang)}
-              </span>
-              {i < 2 && (
-                <span aria-hidden className="absolute top-7 left-16 hidden h-0.5 w-[calc(100%-4.5rem)] border-t-2 border-dashed border-indigo/40 md:block" />
-              )}
-              <div>
+            <li key={i} className="overflow-hidden rounded-3xl bg-white">
+              <div className="relative aspect-[16/10] p-4 sm:p-6 md:aspect-[4/3]" style={{ backgroundColor: panels[i] }}>
+                {art[i]}
+                <span className="display absolute top-4 left-4 grid size-12 place-items-center rounded-full bg-indigo text-xl font-bold text-white shadow-[0_6px_16px_-6px_rgba(36,34,110,0.6)]">
+                  {num(i + 1, lang)}
+                </span>
+              </div>
+              <div className="p-5 sm:p-6">
                 <h3 className="font-display text-2xl font-semibold">{tr(s.t)}</h3>
-                <p className="mt-1 max-w-xs text-ink-soft">{tr(s.d)}</p>
+                <p className="mt-1.5 text-ink-soft">{tr(s.d)}</p>
               </div>
             </li>
           ))}

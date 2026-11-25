@@ -9,14 +9,14 @@ import { PosterArt } from "./poster-art";
 
 /**
  * Colour stage: each verb arrives with its own colour block, matching art and a soft
- * wash over the whole hero. Order matches t.hero.verbs (draw, write, speak, code, play).
+ * wash over the whole hero. Order matches t.hero.verbs (draw, write, speak, sing, play).
  * Crimson is reserved for deadlines, so "speak" uses pink.
  */
 const stages: { bg: string; ink: string; wash: string; shape: Contest["poster"]["shape"] }[] = [
   { bg: "#FFE3A1", ink: "#5C4200", wash: "#FFF8E6", shape: "sun" },
   { bg: "#CDEBDA", ink: "#1F5A3E", wash: "#EEF8F2", shape: "pen" },
   { bg: "#FFD3DD", ink: "#99133A", wash: "#FFF2F5", shape: "mic" },
-  { bg: "#6563F1", ink: "#FFFFFF", wash: "#F0EFFE", shape: "code" },
+  { bg: "#6563F1", ink: "#FFFFFF", wash: "#F0EFFE", shape: "note" },
   { bg: "#C9E8F4", ink: "#0B4F5C", wash: "#EDF8FB", shape: "play" },
 ];
 const INTERVAL = 2500;

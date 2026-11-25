@@ -1,7 +1,7 @@
 export type Lang = "bn" | "en";
 export type L = Record<Lang, string>;
 
-export type AgeKey = "pre" | "p1" | "p6" | "ssc" | "uni";
+export type AgeKey = "pre" | "p1" | "p6" | "ssc";
 export type CatKey = "all" | "art" | "writing" | "speech" | "sci" | "nature" | "sports";
 
 const BN_DIGITS = "০১২৩৪৫৬৭৮৯";
@@ -15,7 +15,6 @@ export const ages: { key: AgeKey; label: L; hint: L }[] = [
   { key: "p1", label: { bn: "১ম–৫ম শ্রেণি", en: "Class 1–5" }, hint: { bn: "প্রাথমিক", en: "Primary" } },
   { key: "p6", label: { bn: "৬ষ্ঠ–১০ম শ্রেণি", en: "Class 6–10" }, hint: { bn: "মাধ্যমিক", en: "Secondary" } },
   { key: "ssc", label: { bn: "এইচএসসি", en: "HSC" }, hint: { bn: "কলেজ", en: "College" } },
-  { key: "uni", label: { bn: "বিশ্ববিদ্যালয়", en: "University" }, hint: { bn: "স্নাতক", en: "Undergrad" } },
 ];
 
 export const cats: { key: CatKey; label: L }[] = [
@@ -28,6 +27,16 @@ export const cats: { key: CatKey; label: L }[] = [
   { key: "sports", label: { bn: "খেলাধুলা", en: "Sports" } },
 ];
 
+/** How you take part. Decides the rules, what you upload and how winners are shown. */
+export type Format = "quiz" | "photo" | "video" | "audio" | "debate";
+export const formats: Record<Format, { label: L; icon: string }> = {
+  quiz: { label: { bn: "কুইজ", en: "Quiz" }, icon: "❓" },
+  photo: { label: { bn: "ছবি", en: "Photo" }, icon: "📷" },
+  video: { label: { bn: "ভিডিও", en: "Video" }, icon: "🎬" },
+  audio: { label: { bn: "অডিও", en: "Audio" }, icon: "🎙️" },
+  debate: { label: { bn: "বিতর্ক · দলগত", en: "Debate · teams" }, icon: "🗣️" },
+};
+
 export type ContestStatus = "open" | "upcoming" | "ended";
 export const statusOf = (c: { status?: ContestStatus }): ContestStatus => c.status ?? "open";
 
@@ -37,6 +46,7 @@ export type Contest = {
   org: L;
   orgInitial: string;
   cat: Exclude<CatKey, "all">;
+  format: Format;
   ages: AgeKey[];
   fee: number; // 0 = free, in BDT
   prize: L;
@@ -44,10 +54,12 @@ export type Contest = {
   daysLeft: number;
   /** open (default) = taking entries; upcoming = not started yet; ended = results out */
   status?: ContestStatus;
+  /** quiz contests: when the live online quiz runs */
+  quizAt?: L;
   /** for upcoming contests: days until entries open */
   startsIn?: number;
   beginner?: boolean;
-  poster: { bg: string; ink: string; shape: "sun" | "wave" | "leaf" | "atom" | "mic" | "pen" | "ball" | "code" | "play" };
+  poster: { bg: string; ink: string; shape: "sun" | "wave" | "leaf" | "atom" | "mic" | "pen" | "ball" | "note" | "play" };
 };
 
 // Sample data for the prototype. Replace with live contests from the API.
@@ -58,6 +70,7 @@ export const contests: Contest[] = [
     org: { bn: "বিজয়ী আর্ট ক্লাব", en: "Beejoyi Art Club" },
     orgInitial: "বি",
     cat: "art",
+    format: "photo",
     ages: ["pre", "p1"],
     fee: 0,
     prize: { bn: "সার্টিফিকেট + আর্ট কিট", en: "Certificate + art kit" },
@@ -72,6 +85,7 @@ export const contests: Contest[] = [
     org: { bn: "সবুজপাতা স্কুল (নমুনা)", en: "Sabujpata School (sample)" },
     orgInitial: "স",
     cat: "speech",
+    format: "video",
     ages: ["p1", "p6"],
     fee: 50,
     prize: { bn: "৳৫,০০০ পুরস্কার", en: "৳5,000 in prizes" },
@@ -85,6 +99,8 @@ export const contests: Contest[] = [
     org: { bn: "বিজ্ঞান বন্ধু ক্লাব (নমুনা)", en: "Science Friends Club (sample)" },
     orgInitial: "বি",
     cat: "sci",
+    format: "quiz",
+    quizAt: { bn: "শুক্রবার, ৪ ডিসেম্বর · সন্ধ্যা ৭টা", en: "Friday 4 December · 7 pm" },
     ages: ["p6", "ssc"],
     fee: 0,
     prize: { bn: "সার্টিফিকেট + মেডেল", en: "Certificate + medal" },
@@ -95,24 +111,26 @@ export const contests: Contest[] = [
   },
   {
     id: "c4",
-    title: { bn: "গল্প লেখা: একদিন বৃষ্টিতে", en: "Story writing: One rainy day" },
+    title: { bn: "গল্প বলো: একদিন বৃষ্টিতে", en: "Tell a story: One rainy day" },
     org: { bn: "কিশোর কলম (নমুনা)", en: "Kishor Kolom (sample)" },
     orgInitial: "ক",
-    cat: "writing",
+    cat: "speech",
+    format: "audio",
     ages: ["p6", "ssc"],
     fee: 30,
     prize: { bn: "বই উপহার + প্রকাশের সুযোগ", en: "Book prize + get published" },
     joined: 488,
     daysLeft: 6,
-    poster: { bg: "#E8F2EC", ink: "#1F5A3E", shape: "pen" },
+    poster: { bg: "#E8F2EC", ink: "#1F5A3E", shape: "mic" },
   },
   {
     id: "c5",
-    title: { bn: "ক্যাম্পাস স্টার্টআপ আইডিয়া চ্যালেঞ্জ", en: "Campus startup idea challenge" },
-    org: { bn: "ইউনি ইনোভেশন হাব (নমুনা)", en: "Uni Innovation Hub (sample)" },
-    orgInitial: "ই",
+    title: { bn: "স্কুল স্টার্টআপ আইডিয়া চ্যালেঞ্জ", en: "School startup idea challenge" },
+    org: { bn: "তরুণ উদ্যোক্তা ক্লাব (নমুনা)", en: "Young Founders Club (sample)" },
+    orgInitial: "ত",
     cat: "sci",
-    ages: ["uni", "ssc"],
+    format: "video",
+    ages: ["p6", "ssc"],
     fee: 200,
     prize: { bn: "৳৫০,০০০ + মেন্টরশিপ", en: "৳50,000 + mentorship" },
     joined: 316,
@@ -125,7 +143,8 @@ export const contests: Contest[] = [
     org: { bn: "সবুজ বাংলা ফটো ক্লাব (নমুনা)", en: "Green Bangla Photo Club (sample)" },
     orgInitial: "স",
     cat: "nature",
-    ages: ["p6", "ssc", "uni"],
+    format: "photo",
+    ages: ["p6", "ssc"],
     fee: 0,
     prize: { bn: "ক্যামেরা ব্যাগ + সার্টিফিকেট", en: "Camera bag + certificate" },
     joined: 905,
@@ -139,6 +158,7 @@ export const contests: Contest[] = [
     org: { bn: "বিজয়ী আর্ট ক্লাব", en: "Beejoyi Art Club" },
     orgInitial: "বি",
     cat: "art",
+    format: "photo",
     ages: ["pre"],
     fee: 0,
     prize: { bn: "সার্টিফিকেট", en: "Certificate" },
@@ -149,13 +169,15 @@ export const contests: Contest[] = [
   },
   {
     id: "c8",
-    title: { bn: "আন্তঃস্কুল দাবা টুর্নামেন্ট", en: "Inter-school chess tournament" },
-    org: { bn: "ঢাকা দাবা একাডেমি (নমুনা)", en: "Dhaka Chess Academy (sample)" },
+    title: { bn: "খেলাধুলা কুইজ: ক্রিকেট থেকে ফুটবল", en: "Sports quiz: cricket to football" },
+    org: { bn: "ঢাকা স্পোর্টস ক্লাব (নমুনা)", en: "Dhaka Sports Club (sample)" },
     orgInitial: "ঢা",
     cat: "sports",
+    format: "quiz",
+    quizAt: { bn: "শনিবার, ৫ ডিসেম্বর · বিকেল ৪টা", en: "Saturday 5 December · 4 pm" },
     ages: ["p1", "p6", "ssc"],
-    fee: 100,
-    prize: { bn: "৳১০,০০০ + ট্রফি", en: "৳10,000 + trophy" },
+    fee: 20,
+    prize: { bn: "৳১০,০০০ + জার্সি", en: "৳10,000 + jerseys" },
     joined: 254,
     daysLeft: 5,
     poster: { bg: "#FFF4D6", ink: "#6B4D00", shape: "ball" },
@@ -166,6 +188,7 @@ export const contests: Contest[] = [
     org: { bn: "বিজয়ী আর্ট ক্লাব", en: "Beejoyi Art Club" },
     orgInitial: "বি",
     cat: "speech",
+    format: "audio",
     ages: ["pre", "p1"],
     fee: 0,
     prize: { bn: "সার্টিফিকেট + গল্পের বই", en: "Certificate + storybook" },
@@ -180,6 +203,7 @@ export const contests: Contest[] = [
     org: { bn: "সবুজপাতা স্কুল (নমুনা)", en: "Sabujpata School (sample)" },
     orgInitial: "স",
     cat: "writing",
+    format: "photo",
     ages: ["p1", "p6"],
     fee: 0,
     prize: { bn: "সার্টিফিকেট + কলম সেট", en: "Certificate + pen set" },
@@ -191,10 +215,11 @@ export const contests: Contest[] = [
   {
     id: "c11",
     title: { bn: "প্রথম বিতর্ক: অনলাইন রাউন্ড", en: "First debate: online round" },
-    org: { bn: "ইউনি ইনোভেশন হাব (নমুনা)", en: "Uni Innovation Hub (sample)" },
-    orgInitial: "ই",
+    org: { bn: "যুক্তি বিতর্ক ক্লাব (নমুনা)", en: "Jukti Debate Club (sample)" },
+    orgInitial: "যু",
     cat: "speech",
-    ages: ["ssc", "uni"],
+    format: "debate",
+    ages: ["p6", "ssc"],
     fee: 0,
     prize: { bn: "সার্টিফিকেট + মেন্টর সেশন", en: "Certificate + mentor session" },
     joined: 412,
@@ -208,6 +233,7 @@ export const contests: Contest[] = [
     org: { bn: "বিজয়ী আর্ট ক্লাব", en: "Beejoyi Art Club" },
     orgInitial: "বি",
     cat: "art",
+    format: "photo",
     ages: ["pre", "p1", "p6"],
     fee: 0,
     prize: { bn: "সার্টিফিকেট + রঙের বাক্স", en: "Certificate + paint box" },
@@ -223,7 +249,8 @@ export const contests: Contest[] = [
     org: { bn: "বিজ্ঞান বন্ধু ক্লাব (নমুনা)", en: "Science Friends Club (sample)" },
     orgInitial: "বি",
     cat: "sci",
-    ages: ["p6", "ssc", "uni"],
+    format: "video",
+    ages: ["p6", "ssc"],
     fee: 300,
     prize: { bn: "৳৩০,০০০ + রোবট কিট", en: "৳30,000 + robot kit" },
     joined: 0,
@@ -234,10 +261,11 @@ export const contests: Contest[] = [
   },
   {
     id: "c14",
-    title: { bn: "মাতৃভাষা দিবস রচনা প্রতিযোগিতা", en: "Mother Language Day essay contest" },
+    title: { bn: "মাতৃভাষা দিবস কুইজ", en: "Mother Language Day quiz" },
     org: { bn: "কিশোর কলম (নমুনা)", en: "Kishor Kolom (sample)" },
     orgInitial: "ক",
     cat: "writing",
+    format: "quiz",
     ages: ["p6", "ssc"],
     fee: 0,
     prize: { bn: "বই উপহার + সার্টিফিকেট", en: "Books + certificate" },
@@ -252,13 +280,59 @@ export const contests: Contest[] = [
     org: { bn: "সবুজ বাংলা ফটো ক্লাব (নমুনা)", en: "Green Bangla Photo Club (sample)" },
     orgInitial: "স",
     cat: "nature",
-    ages: ["ssc", "uni"],
+    format: "photo",
+    ages: ["p6", "ssc"],
     fee: 50,
     prize: { bn: "৳১৫,০০০ পুরস্কার", en: "৳15,000 in prizes" },
     joined: 1488,
     daysLeft: 0,
     status: "ended",
     poster: { bg: "#D9F0E2", ink: "#1F5A3E", shape: "leaf" },
+  },
+  {
+    id: "c16",
+    title: { bn: "কবিতা আবৃত্তি: রবীন্দ্র-নজরুল সন্ধ্যা", en: "Poetry recitation: Tagore–Nazrul evening" },
+    org: { bn: "সুরের পাখি আবৃত্তি দল (নমুনা)", en: "Surer Pakhi Recitation Group (sample)" },
+    orgInitial: "সু",
+    cat: "speech",
+    format: "video",
+    ages: ["p6", "ssc"],
+    fee: 0,
+    prize: { bn: "সার্টিফিকেট + বই উপহার", en: "Certificate + books" },
+    joined: 964,
+    daysLeft: 0,
+    status: "ended",
+    poster: { bg: "#FFD3DD", ink: "#99133A", shape: "mic" },
+  },
+  {
+    id: "c17",
+    title: { bn: "পডকাস্ট চ্যালেঞ্জ: আমার এলাকার গল্প", en: "Podcast challenge: Stories from my area" },
+    org: { bn: "তরুণ কণ্ঠ রেডিও (নমুনা)", en: "Torun Kontho Radio (sample)" },
+    orgInitial: "ত",
+    cat: "speech",
+    format: "audio",
+    ages: ["p6", "ssc"],
+    fee: 0,
+    prize: { bn: "রেডিওতে প্রচার + সার্টিফিকেট", en: "Aired on radio + certificate" },
+    joined: 702,
+    daysLeft: 0,
+    status: "ended",
+    poster: { bg: "#C9E8F4", ink: "#0B4F5C", shape: "wave" },
+  },
+  {
+    id: "c18",
+    title: { bn: "আন্তঃস্কুল বিতর্ক উৎসব: চূড়ান্ত পর্ব", en: "Inter-school debate festival: finals" },
+    org: { bn: "যুক্তি বিতর্ক ক্লাব (নমুনা)", en: "Jukti Debate Club (sample)" },
+    orgInitial: "যু",
+    cat: "speech",
+    format: "debate",
+    ages: ["p6", "ssc"],
+    fee: 0,
+    prize: { bn: "৳২০,০০০ + ট্রফি", en: "৳20,000 + trophy" },
+    joined: 96,
+    daysLeft: 0,
+    status: "ended",
+    poster: { bg: "#24226E", ink: "#FFC329", shape: "mic" },
   },
 ];
 
@@ -267,7 +341,8 @@ export function matchesQuery(c: Contest, query: string) {
   const q = query.trim().toLowerCase();
   if (!q) return true;
   const cat = cats.find((x) => x.key === c.cat)!.label;
-  return [c.title.bn, c.title.en, c.org.bn, c.org.en, cat.bn, cat.en].some((s) => s.toLowerCase().includes(q));
+  const f = formats[c.format].label;
+  return [c.title.bn, c.title.en, c.org.bn, c.org.en, cat.bn, cat.en, f.bn, f.en].some((s) => s.toLowerCase().includes(q));
 }
 
 export const leaderboard = [
@@ -294,13 +369,13 @@ export const t = {
   },
   hero: {
     verbs: {
-      bn: ["আঁকো", "লেখো", "বলো", "কোড করো", "খেলো"],
-      en: ["Draw", "Write", "Speak", "Code", "Play"],
+      bn: ["আঁকো", "লেখো", "বলো", "গাও", "খেলো"],
+      en: ["Draw", "Write", "Speak", "Sing", "Play"],
     },
     line2: { bn: "জিতে নাও সার্টিফিকেট আর পুরস্কার", en: "and win certificates and prizes" },
     sub: {
-      bn: "প্রি-স্কুল থেকে বিশ্ববিদ্যালয়, সবার জন্য কনটেস্ট আর গেম।",
-      en: "Contests and games for every student, preschool to university.",
+      bn: "প্রি-স্কুল থেকে এইচএসসি, সবার জন্য কনটেস্ট আর গেম।",
+      en: "Contests and games for every student, preschool to HSC.",
     },
     searchPh: { bn: "আঁকা, কুইজ, আবৃত্তি… খুঁজে দেখো", en: "Search drawing, quiz, recitation…" },
     searchBtn: { bn: "কনটেস্ট খোঁজো", en: "Find contests" },
@@ -371,6 +446,11 @@ export const t = {
   },
   how: {
     title: { bn: "কীভাবে কাজ করে", en: "How it works" },
+    art: {
+      uploaded: { bn: "আপলোড হয়েছে", en: "Uploaded" },
+      certificate: { bn: "সার্টিফিকেট", en: "Certificate" },
+      name: { bn: "আয়েশা", en: "Ayesha" },
+    },
     steps: [
       { t: { bn: "যোগ দাও", en: "Join" }, d: { bn: "ফ্রি অ্যাকাউন্ট খোলো। ছোটদের প্রোফাইল চালাবেন বাবা-মা।", en: "Create a free account. Parents manage profiles for younger children." } },
       { t: { bn: "জমা দাও", en: "Submit" }, d: { bn: "ছবি, লেখা, ভিডিও বা অডিও, ফোন থেকেই আপলোড করো।", en: "Upload a drawing, essay, video or audio straight from your phone." } },
@@ -440,7 +520,7 @@ export const t = {
     title: { bn: "প্রায়ই জিজ্ঞেস করা প্রশ্ন", en: "Common questions" },
     items: [
       { q: { bn: "বিজয়ীতে যোগ দিতে কি টাকা লাগে?", en: "Does it cost anything to join?" }, a: { bn: "অ্যাকাউন্ট খোলা আর গেম খেলা সম্পূর্ণ ফ্রি। বেশিরভাগ কনটেস্ট ফ্রি; কিছু কনটেস্টে ছোট এন্ট্রি ফি থাকে, যা কার্ডেই লেখা থাকে।", en: "Creating an account and playing games is free. Most contests are free; some have a small entry fee, shown on the contest card." } },
-      { q: { bn: "কোন বয়সের শিক্ষার্থীরা অংশ নিতে পারে?", en: "What ages can take part?" }, a: { bn: "৩ বছর থেকে বিশ্ববিদ্যালয় পর্যন্ত। প্রতিটি কনটেস্টে বয়স বা শ্রেণি লেখা থাকে।", en: "From age 3 up to university. Every contest shows which ages or classes it is for." } },
+      { q: { bn: "কোন বয়সের শিক্ষার্থীরা অংশ নিতে পারে?", en: "What ages can take part?" }, a: { bn: "৩ বছর থেকে এইচএসসি পর্যন্ত। প্রতিটি কনটেস্টে বয়স বা শ্রেণি লেখা থাকে।", en: "From age 3 up to HSC. Every contest shows which ages or classes it is for." } },
       { q: { bn: "আমার সন্তানের তথ্য কি নিরাপদ?", en: "Is my child's information safe?" }, a: { bn: "হ্যাঁ। ছোটদের প্রোফাইল বাবা-মা চালান, আর যোগাযোগের তথ্য কখনো প্রকাশ্যে দেখানো হয় না।", en: "Yes. Parents manage younger children's profiles, and contact details are never shown publicly." } },
       { q: { bn: "বিজয়ী কীভাবে ঠিক হয়?", en: "How are winners chosen?" }, a: { bn: "প্রতিটি কনটেস্টের নিজস্ব নম্বর দেওয়ার নিয়ম (রুব্রিক) থাকে। বিচারকরা সেই অনুযায়ী নম্বর দেন, কিছু কনটেস্টে ভোটও যোগ হয়।", en: "Each contest has its own scoring guide (rubric). Judges score against it, and some contests add public votes." } },
       { q: { bn: "সার্টিফিকেট কোথায় পাব?", en: "Where do I get my certificate?" }, a: { bn: "ফলাফল প্রকাশের পর প্রোফাইল থেকে ডাউনলোড করুন। লিংক দিয়ে যে কেউ সার্টিফিকেট যাচাই করতে পারবে।", en: "Download it from your profile once results are out. Anyone can verify it with its link." } },
@@ -474,46 +554,89 @@ type SubjectGuide = {
   rubric: { name: L; weight: number }[];
 };
 
-// Per-subject defaults. Organisers will be able to edit these in the Studio.
-export const subjectGuides: Record<Exclude<CatKey, "all">, SubjectGuide> = {
-  art: {
+// Per-format defaults. Organisers will be able to edit these in the Studio.
+export const formatGuides: Record<Format, SubjectGuide> = {
+  quiz: {
     overview: {
-      bn: "নিজের হাতে আঁকো, রঙ করো, তারপর ছবি তুলে জমা দাও। কাগজ, রঙ, পেনসিল, যা খুশি ব্যবহার করতে পারো।",
-      en: "Draw and colour by hand, then take a photo and submit it. Use any paper, paint or pencils you like.",
+      bn: "নির্দিষ্ট সময়ে অনলাইনে কুইজ দাও, ফোন বা কম্পিউটার যেকোনোটা দিয়ে। প্রশ্ন তোমার শ্রেণির উপযোগী।",
+      en: "Take the quiz online at the set time, on a phone or computer. Questions suit your class.",
     },
-    format: { bn: "আঁকার ছবি: JPG বা PNG, সর্বোচ্চ ১০ MB", en: "Photo of the artwork: JPG or PNG, up to 10 MB" },
+    format: { bn: "অনলাইন কুইজ: ৩০টি প্রশ্ন, ২০ মিনিট", en: "Online quiz: 30 questions, 20 minutes" },
     steps: [
-      { bn: "বিষয় অনুযায়ী ছবি আঁকো", en: "Draw on the given theme" },
-      { bn: "ভালো আলোতে সোজা করে ছবি তোলো", en: "Photograph it straight, in good light" },
-      { bn: "প্রোফাইল থেকে আপলোড করো", en: "Upload it from your profile" },
+      { bn: "যোগ দাও", en: "Join" },
+      { bn: "নির্ধারিত সময়ে লগ ইন করো", en: "Log in at the set time" },
+      { bn: "২০ মিনিটে উত্তর দাও", en: "Answer within 20 minutes" },
     ],
     rules: [
-      { bn: "ছবি নিজের আঁকা হতে হবে; বড়রা আঁকায় সাহায্য করতে পারবে না", en: "The artwork must be the child's own; adults may not help draw" },
-      { bn: "একজন একটি ছবিই জমা দিতে পারবে", en: "One entry per participant" },
-      { bn: "ডিজিটাল আঁকা বা এআই দিয়ে বানানো ছবি গ্রহণযোগ্য নয়", en: "Digital or AI-generated images are not accepted" },
+      { bn: "কুইজ একবারই দেওয়া যাবে", en: "The quiz can be taken once" },
+      { bn: "ইন্টারনেট সার্চ বা অন্যের সাহায্য নেওয়া যাবে না", en: "No web search and no help from others" },
+      { bn: "নম্বর সমান হলে যে কম সময়ে শেষ করেছে সে এগিয়ে", en: "On a tie, the faster finish ranks higher" },
     ],
     rubric: [
-      { name: { bn: "সৃজনশীলতা", en: "Creativity" }, weight: 40 },
-      { name: { bn: "বিষয়ের সাথে মিল", en: "Fits the theme" }, weight: 30 },
-      { name: { bn: "রঙের ব্যবহার", en: "Use of colour" }, weight: 20 },
-      { name: { bn: "পরিচ্ছন্নতা", en: "Neatness" }, weight: 10 },
+      { name: { bn: "সঠিক উত্তর", en: "Correct answers" }, weight: 90 },
+      { name: { bn: "সময় (টাই হলে)", en: "Time (tie-break)" }, weight: 10 },
     ],
   },
-  speech: {
+  photo: {
     overview: {
-      bn: "আবৃত্তি বা বক্তৃতার ভিডিও বা অডিও রেকর্ড করে জমা দাও। ফোনে রেকর্ড করলেই হবে।",
-      en: "Record a video or audio of your recitation or speech and submit it. A phone recording is fine.",
+      bn: "ছবি তোলো, বা আঁকা ছবির ছবি তোলো, তারপর আপলোড করো। ফোনের ক্যামেরাই যথেষ্ট।",
+      en: "Take a photo, or photograph your artwork, then upload it. A phone camera is enough.",
     },
-    format: { bn: "ভিডিও (MP4) বা অডিও (MP3), সর্বোচ্চ ৩ মিনিট", en: "Video (MP4) or audio (MP3), up to 3 minutes" },
+    format: { bn: "ছবি: JPG বা PNG, সর্বোচ্চ ১৫ MB, ৩টি পর্যন্ত", en: "Photo: JPG or PNG, up to 15 MB, up to 3" },
     steps: [
-      { bn: "কবিতা বা বিষয় বেছে নাও", en: "Choose your poem or topic" },
-      { bn: "শান্ত জায়গায় রেকর্ড করো", en: "Record somewhere quiet" },
+      { bn: "বিষয় অনুযায়ী ছবি তোলো বা আঁকো", en: "Shoot or draw on the theme" },
+      { bn: "ভালো আলোতে, সোজা করে তোলো", en: "Shoot it straight, in good light" },
+      { bn: "এক লাইনের ক্যাপশন দিয়ে আপলোড করো", en: "Upload with a one-line caption" },
+    ],
+    rules: [
+      { bn: "কাজটি নিজের হতে হবে", en: "The work must be your own" },
+      { bn: "হালকা এডিট (উজ্জ্বলতা, ক্রপ) চলবে; এআই বা জোড়া লাগানো ছবি চলবে না", en: "Light edits (brightness, crop) are fine; no AI or compositing" },
+      { bn: "সর্বোচ্চ ৩টি ছবি", en: "Up to 3 photos" },
+    ],
+    rubric: [
+      { name: { bn: "সৃজনশীলতা ও মুহূর্ত", en: "Creativity & moment" }, weight: 40 },
+      { name: { bn: "বিষয়ের সাথে মিল", en: "Fits the theme" }, weight: 30 },
+      { name: { bn: "কম্পোজিশন ও আলো", en: "Composition & light" }, weight: 30 },
+    ],
+  },
+  video: {
+    overview: {
+      bn: "ফোনে ভিডিও রেকর্ড করে জমা দাও: আবৃত্তি, বক্তৃতা, পিচ বা প্রজেক্টের ডেমো।",
+      en: "Record a video on your phone and submit it: a recitation, speech, pitch or project demo.",
+    },
+    format: { bn: "ভিডিও: MP4, সর্বোচ্চ ৩ মিনিট, ২০০ MB", en: "Video: MP4, up to 3 minutes, 200 MB" },
+    steps: [
+      { bn: "কী বলবে বা দেখাবে ঠিক করো", en: "Plan what you'll say or show" },
+      { bn: "শান্ত, আলোকিত জায়গায় রেকর্ড করো", en: "Record somewhere quiet and bright" },
       { bn: "প্রোফাইল থেকে আপলোড করো", en: "Upload it from your profile" },
     ],
     rules: [
-      { bn: "রেকর্ডিং এডিট করা যাবে না, এক টানে হতে হবে", en: "One continuous take, no editing" },
+      { bn: "ভিডিওতে অংশগ্রহণকারীকেই দেখা যেতে হবে", en: "The participant must appear in the video" },
       { bn: "সময়সীমা ৩ মিনিট; বেশি হলে নম্বর কাটা যাবে", en: "3-minute limit; longer entries lose marks" },
-      { bn: "ব্যাকগ্রাউন্ড মিউজিক ব্যবহার করা যাবে না", en: "No background music" },
+      { bn: "এক টানে রেকর্ড; কাটাছেঁড়া চলবে না", en: "One continuous take, no cuts" },
+    ],
+    rubric: [
+      { name: { bn: "বিষয়বস্তু", en: "Content" }, weight: 35 },
+      { name: { bn: "ভাব ও উপস্থাপনা", en: "Expression & delivery" }, weight: 35 },
+      { name: { bn: "সাবলীলতা", en: "Fluency" }, weight: 20 },
+      { name: { bn: "সময় মেনে চলা", en: "Timing" }, weight: 10 },
+    ],
+  },
+  audio: {
+    overview: {
+      bn: "শুধু কণ্ঠ: ছড়া, গল্প বা পডকাস্ট রেকর্ড করে জমা দাও। ক্যামেরার সামনে আসতে হবে না।",
+      en: "Voice only: record a rhyme, story or podcast and submit it. No camera needed.",
+    },
+    format: { bn: "অডিও: MP3 বা M4A, সর্বোচ্চ ৩ মিনিট, ৫০ MB", en: "Audio: MP3 or M4A, up to 3 minutes, 50 MB" },
+    steps: [
+      { bn: "ছড়া, গল্প বা বিষয় বেছে নাও", en: "Pick your rhyme, story or topic" },
+      { bn: "শান্ত জায়গায় ফোনে রেকর্ড করো", en: "Record on a phone somewhere quiet" },
+      { bn: "প্রোফাইল থেকে আপলোড করো", en: "Upload it from your profile" },
+    ],
+    rules: [
+      { bn: "কণ্ঠ অংশগ্রহণকারীর নিজের হতে হবে", en: "The voice must be the participant's own" },
+      { bn: "ব্যাকগ্রাউন্ড মিউজিক চলবে না", en: "No background music" },
+      { bn: "সময়সীমা ৩ মিনিট", en: "3-minute limit" },
     ],
     rubric: [
       { name: { bn: "উচ্চারণ", en: "Pronunciation" }, weight: 35 },
@@ -522,92 +645,27 @@ export const subjectGuides: Record<Exclude<CatKey, "all">, SubjectGuide> = {
       { name: { bn: "সময় মেনে চলা", en: "Timing" }, weight: 10 },
     ],
   },
-  writing: {
+  debate: {
     overview: {
-      bn: "দেওয়া বিষয়ে নিজের ভাষায় লেখো। হাতে লিখে ছবি তুলতে পারো, বা টাইপ করে জমা দিতে পারো।",
-      en: "Write on the given theme in your own words. Handwrite and photograph it, or type it.",
+      bn: "৩ জনের দল বানাও, তারপর লাইভ অনলাইন রাউন্ডে অন্য দলের সাথে বিতর্ক করো। জিতলে পুরো দল বিজয়ী।",
+      en: "Form a team of 3 and debate other teams in live online rounds. Wins go to the whole team.",
     },
-    format: { bn: "টাইপ করা লেখা বা PDF, অথবা হাতের লেখার ছবি; ৩০০–৮০০ শব্দ", en: "Typed text or PDF, or a photo of handwriting; 300–800 words" },
+    format: { bn: "দলগত: ৩ জন, ভিডিও কলে লাইভ রাউন্ড, নকআউট পদ্ধতি", en: "Teams of 3, live rounds on video call, knockout" },
     steps: [
-      { bn: "বিষয়টা ভালো করে পড়ো", en: "Read the theme carefully" },
-      { bn: "লেখো, তারপর একবার পড়ে ঠিক করো", en: "Write, then read it through once to fix it" },
-      { bn: "প্রোফাইল থেকে জমা দাও", en: "Submit from your profile" },
+      { bn: "৩ জনের দল নিয়ে যোগ দাও", en: "Join with a team of 3" },
+      { bn: "বিষয় আর সময়সূচি এসএমএসে পাবে", en: "Get the motion and schedule by SMS" },
+      { bn: "লাইভ রাউন্ডে বিতর্ক করো", en: "Debate in the live round" },
     ],
     rules: [
-      { bn: "লেখা মৌলিক হতে হবে; কপি বা এআই দিয়ে লেখা বাতিল হবে", en: "Original work only; copied or AI-written entries are disqualified" },
-      { bn: "বাংলা বা ইংরেজি, যেকোনো একটিতে লেখা যাবে", en: "Write in Bangla or English" },
-      { bn: "শব্দসীমা মানতে হবে", en: "Stay within the word limit" },
+      { bn: "দলের সবাই একই প্রতিষ্ঠানের হতে হবে", en: "All team members must be from the same institution" },
+      { bn: "প্রত্যেক বক্তা ৪ মিনিট সময় পাবে", en: "Each speaker gets 4 minutes" },
+      { bn: "প্রতিপক্ষকে সম্মান করে কথা বলতে হবে", en: "Speak respectfully to the other team" },
     ],
     rubric: [
-      { name: { bn: "ভাবনা ও মৌলিকতা", en: "Ideas & originality" }, weight: 40 },
-      { name: { bn: "ভাষা ও বানান", en: "Language & spelling" }, weight: 30 },
-      { name: { bn: "গঠন", en: "Structure" }, weight: 20 },
-      { name: { bn: "বিষয়ের সাথে মিল", en: "Fits the theme" }, weight: 10 },
-    ],
-  },
-  sci: {
-    overview: {
-      bn: "অনলাইনে নির্দিষ্ট সময়ে কুইজ দাও বা প্রজেক্ট জমা দাও। প্রশ্ন তোমার শ্রেণির পাঠ্যক্রম থেকেই।",
-      en: "Take the timed online round or submit your project. Questions follow your class syllabus.",
-    },
-    format: { bn: "অনলাইন কুইজ (৩০ মিনিট) বা প্রজেক্ট PDF + ২ মিনিটের ভিডিও", en: "Online quiz (30 minutes) or project PDF + 2-minute video" },
-    steps: [
-      { bn: "রেজিস্ট্রেশন করো", en: "Register" },
-      { bn: "নির্ধারিত সময়ে লগ ইন করো", en: "Log in at the scheduled time" },
-      { bn: "উত্তর দাও বা প্রজেক্ট আপলোড করো", en: "Answer the quiz or upload your project" },
-    ],
-    rules: [
-      { bn: "কুইজ একবারই দেওয়া যাবে", en: "The quiz can be taken once" },
-      { bn: "ক্যালকুলেটর চলবে, ইন্টারনেট সার্চ নয়", en: "Calculators allowed, web search is not" },
-      { bn: "দলগত প্রজেক্টে সর্বোচ্চ ৩ জন", en: "Team projects: up to 3 members" },
-    ],
-    rubric: [
-      { name: { bn: "সঠিক উত্তর ও ধারণা", en: "Accuracy & concepts" }, weight: 50 },
-      { name: { bn: "সমস্যা সমাধান", en: "Problem solving" }, weight: 30 },
-      { name: { bn: "উপস্থাপনা", en: "Presentation" }, weight: 20 },
-    ],
-  },
-  nature: {
-    overview: {
-      bn: "প্রকৃতির ছবি তোলো, ফোন বা ক্যামেরা যা আছে তা দিয়েই। ছবির সাথে এক লাইনে লেখো কোথায় তুলেছ।",
-      en: "Photograph nature with whatever you have, phone or camera. Add one line saying where you took it.",
-    },
-    format: { bn: "ছবি: JPG, সর্বোচ্চ ১৫ MB, সাথে এক লাইনের ক্যাপশন", en: "Photo: JPG up to 15 MB, with a one-line caption" },
-    steps: [
-      { bn: "ছবি তোলো", en: "Take your photo" },
-      { bn: "ক্যাপশন লেখো", en: "Write a caption" },
-      { bn: "প্রোফাইল থেকে আপলোড করো", en: "Upload it from your profile" },
-    ],
-    rules: [
-      { bn: "হালকা এডিট (উজ্জ্বলতা, ক্রপ) চলবে; ছবি জোড়া লাগানো চলবে না", en: "Light edits (brightness, crop) are fine; no compositing" },
-      { bn: "পাখি বা প্রাণীকে বিরক্ত করা যাবে না", en: "Do not disturb birds or animals" },
-      { bn: "সর্বোচ্চ ৩টি ছবি", en: "Up to 3 photos" },
-    ],
-    rubric: [
-      { name: { bn: "গল্প ও মুহূর্ত", en: "Story & moment" }, weight: 40 },
-      { name: { bn: "কম্পোজিশন", en: "Composition" }, weight: 30 },
-      { name: { bn: "আলো ও স্পষ্টতা", en: "Light & clarity" }, weight: 30 },
-    ],
-  },
-  sports: {
-    overview: {
-      bn: "অনলাইনে রেজিস্ট্রেশন, খেলা হবে সরাসরি ভেন্যুতে। সময়সূচি রেজিস্ট্রেশনের পরে এসএমএসে জানানো হবে।",
-      en: "Register online; matches are played in person. The schedule is sent by SMS after you register.",
-    },
-    format: { bn: "সরাসরি অংশগ্রহণ (ভেন্যু: ঢাকা), নকআউট পদ্ধতি", en: "In person (venue: Dhaka), knockout format" },
-    steps: [
-      { bn: "রেজিস্ট্রেশন করো", en: "Register" },
-      { bn: "এসএমএসে সময়সূচি পাবে", en: "Get your schedule by SMS" },
-      { bn: "স্কুল আইডি নিয়ে ভেন্যুতে এসো", en: "Bring your school ID to the venue" },
-    ],
-    rules: [
-      { bn: "স্কুল আইডি কার্ড সাথে আনতে হবে", en: "Bring your school ID card" },
-      { bn: "১৫ মিনিট দেরি হলে ম্যাচ বাতিল", en: "15 minutes late forfeits the match" },
-      { bn: "ছোটদের সাথে একজন অভিভাবক থাকতে হবে", en: "Younger players must come with a guardian" },
-    ],
-    rubric: [
-      { name: { bn: "ম্যাচ জয়", en: "Match wins" }, weight: 80 },
-      { name: { bn: "খেলোয়াড়সুলভ আচরণ", en: "Sportsmanship" }, weight: 20 },
+      { name: { bn: "যুক্তি", en: "Argument" }, weight: 40 },
+      { name: { bn: "খণ্ডন", en: "Rebuttal" }, weight: 30 },
+      { name: { bn: "উপস্থাপনা", en: "Delivery" }, weight: 20 },
+      { name: { bn: "দলের সমন্বয়", en: "Teamwork" }, weight: 10 },
     ],
   },
 };
@@ -615,7 +673,7 @@ export const subjectGuides: Record<Exclude<CatKey, "all">, SubjectGuide> = {
 export const childProfiles = [
   { id: "k1", name: { bn: "আয়েশা", en: "Ayesha" }, age: "p1" as AgeKey, cls: { bn: "২য় শ্রেণি", en: "Class 2" } },
   { id: "k2", name: { bn: "রাফি", en: "Rafi" }, age: "pre" as AgeKey, cls: { bn: "প্রি-স্কুল", en: "Preschool" } },
-  { id: "me", name: { bn: "আমি নিজে", en: "Myself" }, age: "uni" as AgeKey, cls: { bn: "বিশ্ববিদ্যালয়", en: "University" } },
+  { id: "me", name: { bn: "আমি নিজে", en: "Myself" }, age: "ssc" as AgeKey, cls: { bn: "এইচএসসি", en: "HSC" } },
 ];
 
 export const detail = {
@@ -690,15 +748,100 @@ export const detail = {
     doneBody: { bn: "এখন জমা দেওয়ার পালা। শেষ সময়:", en: "Next, submit your entry. Deadline:" },
     submit: { bn: "জমা দাও", en: "Submit entry" },
     later: { bn: "পরে জমা দেব", en: "I'll submit later" },
+    ok: { bn: "ঠিক আছে", en: "Got it" },
+    quizBody: { bn: "কুইজ হবে অনলাইনে, এই সময়ে:", en: "The quiz runs online at:" },
+    quizSoon: { bn: "সময় এসএমএসে জানিয়ে দেব", en: "We'll text you the time" },
+    quizRemind: {
+      bn: "১৫ মিনিট আগে এসএমএসে মনে করিয়ে দেব। সময় হলে এই কনটেস্টের পেজ থেকেই শুরু করবে।",
+      en: "We'll text you 15 minutes before. Start it from this contest's page.",
+    },
+    team: {
+      cta: { bn: "দল নিয়ে যোগ দাও", en: "Join with your team" },
+      title: { bn: "তোমার দল", en: "Your team" },
+      name: { bn: "দলের নাম", en: "Team name" },
+      school: { bn: "শিক্ষাপ্রতিষ্ঠান", en: "School or college" },
+      schoolHint: { bn: "দলের তিনজনই এই প্রতিষ্ঠানের হতে হবে।", en: "All three members must be from here." },
+      members: { bn: "সদস্য (৩ জন)", en: "Members (3)" },
+      captain: { bn: "দলনেতা (তুমি)", en: "Captain (you)" },
+      member: { bn: "সদস্য", en: "Member" },
+      memberName: { bn: "নাম", en: "Name" },
+      phone: { bn: "মোবাইল নম্বর", en: "Mobile number" },
+      captainPhone: { bn: "তোমার অ্যাকাউন্টের নম্বরে এসএমএস যাবে।", en: "We'll text the number on your account." },
+      errName: { bn: "দলের নাম লেখো", en: "Add a team name" },
+      errSchool: { bn: "প্রতিষ্ঠানের নাম লেখো", en: "Add the school or college" },
+      errMember: { bn: "নাম লেখো", en: "Add a name" },
+      errPhone: { bn: "০১ দিয়ে শুরু ১১ সংখ্যার নম্বর দাও", en: "Use an 11-digit number starting with 01" },
+      register: { bn: "দল নিবন্ধন করো", en: "Register team" },
+      doneBody: {
+        bn: "বিষয় আর সময়সূচি দলের তিনজনের ফোনেই এসএমএসে যাবে।",
+        en: "The motion and schedule will be texted to all three members.",
+      },
+    },
     step: { bn: "ধাপ", en: "Step" },
     of: { bn: "এর", en: "of" },
   },
   winnersList: [
     { place: { bn: "প্রথম", en: "1st" }, name: { bn: "সাদিয়া রহমান", en: "Sadia Rahman" }, cls: { bn: "৯ম শ্রেণি", en: "Class 9" }, score: 94 },
-    { place: { bn: "দ্বিতীয়", en: "2nd" }, name: { bn: "তানভীর হাসান", en: "Tanvir Hasan" }, cls: { bn: "এইচএসসি", en: "HSC" }, score: 91 },
+    { place: { bn: "দ্বিতীয়", en: "2nd" }, name: { bn: "আবদুল্লাহ আল মাহমুদ", en: "Abdullah Al Mahmud" }, cls: { bn: "এইচএসসি", en: "HSC" }, score: 91 },
     { place: { bn: "তৃতীয়", en: "3rd" }, name: { bn: "মিথিলা দাস", en: "Mithila Das" }, cls: { bn: "৮ম শ্রেণি", en: "Class 8" }, score: 89 },
   ],
   winnersNote: { bn: "নমুনা ফলাফল", en: "Sample results" },
+  /** Length of each winner's recording, in seconds (video and audio contests). */
+  recordingSecs: [134, 108, 122],
+  /** Quiz: time each winner took; it breaks ties. */
+  quizSecs: [742, 815, 798],
+  quizTime: { bn: "সময়", en: "Time" },
+  /** Debate: the whole team wins. */
+  winnerTeams: [
+    {
+      place: { bn: "প্রথম", en: "1st" },
+      team: { bn: "দল সূর্যোদয়", en: "Team Surjodoy" },
+      school: { bn: "নবীনগর হাই স্কুল (নমুনা)", en: "Nabinagar High School (sample)" },
+      members: [
+        { bn: "সাদিয়া", en: "Sadia" },
+        { bn: "রাকিব", en: "Rakib" },
+        { bn: "নুসরাত", en: "Nusrat" },
+      ],
+      score: 92,
+    },
+    {
+      place: { bn: "দ্বিতীয়", en: "2nd" },
+      team: { bn: "দল নদী", en: "Team Nodi" },
+      school: { bn: "রূপনগর মডেল কলেজ (নমুনা)", en: "Rupnagar Model College (sample)" },
+      members: [
+        { bn: "তানভীর", en: "Tanvir" },
+        { bn: "মিম", en: "Mim" },
+        { bn: "আরিফ", en: "Arif" },
+      ],
+      score: 88,
+    },
+    {
+      place: { bn: "তৃতীয়", en: "3rd" },
+      team: { bn: "দল আলো", en: "Team Alo" },
+      school: { bn: "চরপাড়া বালিকা বিদ্যালয় (নমুনা)", en: "Charpara Girls' School (sample)" },
+      members: [
+        { bn: "মিথিলা", en: "Mithila" },
+        { bn: "রিয়া", en: "Riya" },
+        { bn: "জারা", en: "Zara" },
+      ],
+      score: 85,
+    },
+  ],
+  teamOf: { bn: "দলের সদস্য", en: "Team members" },
+  entry: {
+    mediaNote: {
+      bn: "নমুনা ফলাফল। ছবি, অডিও আর ভিডিও উদাহরণ মাত্র।",
+      en: "Sample results. Photos, audio and video are placeholders.",
+    },
+    play: { bn: "চালাও", en: "Play" },
+    pause: { bn: "থামাও", en: "Pause" },
+    enlarge: { bn: "বড় করে দেখো", en: "View larger" },
+    close: { bn: "বন্ধ করো", en: "Close" },
+    photoOf: { bn: "-এর ছবি", en: "'s photo" },
+    drawingOf: { bn: "-এর আঁকা", en: "'s drawing" },
+    videoOf: { bn: "-এর ভিডিও", en: "'s video" },
+    audioOf: { bn: "-এর অডিও", en: "'s audio" },
+  },
   similar: { bn: "এরকম আরো কনটেস্ট", en: "Similar contests" },
 } as const;
 
@@ -706,13 +849,12 @@ export const detail = {
 
 export type UploadKind = "image" | "media" | "text" | "project" | "none";
 
-export const uploadRules: Record<Exclude<CatKey, "all">, { kind: UploadKind; accept: string; maxMB: number; maxFiles: number }> = {
-  art: { kind: "image", accept: "image/jpeg,image/png", maxMB: 10, maxFiles: 1 },
-  nature: { kind: "image", accept: "image/jpeg", maxMB: 15, maxFiles: 3 },
-  speech: { kind: "media", accept: "video/mp4,video/*,audio/mpeg,audio/*", maxMB: 200, maxFiles: 1 },
-  writing: { kind: "text", accept: "application/pdf,image/jpeg,image/png", maxMB: 10, maxFiles: 1 },
-  sci: { kind: "project", accept: "application/pdf,video/mp4,video/*", maxMB: 100, maxFiles: 2 },
-  sports: { kind: "none", accept: "", maxMB: 0, maxFiles: 0 },
+export const uploadRules: Record<Format, { kind: UploadKind; accept: string; maxMB: number; maxFiles: number }> = {
+  quiz: { kind: "none", accept: "", maxMB: 0, maxFiles: 0 },
+  photo: { kind: "image", accept: "image/jpeg,image/png", maxMB: 15, maxFiles: 3 },
+  video: { kind: "media", accept: "video/mp4,video/*", maxMB: 200, maxFiles: 1 },
+  audio: { kind: "media", accept: "audio/mpeg,audio/mp4,audio/*", maxMB: 50, maxFiles: 1 },
+  debate: { kind: "none", accept: "", maxMB: 0, maxFiles: 0 },
 };
 
 export const WORDS = { min: 300, max: 800 };
@@ -779,6 +921,14 @@ export const submit = {
   sms: { bn: "নিশ্চিতকরণ এসএমএসে পাঠানো হয়েছে (নমুনা)", en: "Confirmation sent by SMS (sample)" },
   replaceEntry: { bn: "জমা বদলাও", en: "Replace entry" },
   more: { bn: "আরো কনটেস্ট দেখো", en: "Find more contests" },
-  sportsTitle: { bn: "এই কনটেস্টে অনলাইনে কিছু জমা দিতে হবে না", en: "Nothing to upload for this contest" },
-  sportsBody: { bn: "খেলা হবে সরাসরি ভেন্যুতে। সময়সূচি এসএমএসে পাবে; স্কুল আইডি নিয়ে এসো।", en: "Matches are played in person. You'll get the schedule by SMS; bring your school ID." },
+  noUpload: {
+    quiz: {
+      title: { bn: "এই কনটেস্টে কিছু আপলোড করতে হবে না", en: "Nothing to upload for this contest" },
+      body: { bn: "কুইজ হবে অনলাইনে, নির্ধারিত সময়ে। সময়টা এসএমএসে জানিয়ে দেব; তখন এখান থেকেই শুরু করবে।", en: "The quiz runs online at a set time. We'll text you the time, and you'll start it from here." },
+    },
+    debate: {
+      title: { bn: "এই কনটেস্টে কিছু আপলোড করতে হবে না", en: "Nothing to upload for this contest" },
+      body: { bn: "বিতর্ক হবে লাইভ অনলাইন রাউন্ডে। বিষয় আর সময়সূচি দলের সবার ফোনে এসএমএসে যাবে।", en: "Debates happen in live online rounds. The motion and schedule go to every team member by SMS." },
+    },
+  },
 } as const;

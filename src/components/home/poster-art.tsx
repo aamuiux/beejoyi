@@ -63,10 +63,14 @@ export function PosterArt({ shape, ink }: Pick<Contest["poster"], "shape" | "ink
           <circle cx="60" cy="18" r="6" {...common} />
         </svg>
       );
-    case "code":
+    case "note":
+      // two beamed music notes, for singing
       return (
         <svg viewBox="0 0 120 80" aria-hidden className="h-full w-full">
-          <path d="M36 20 L14 40 L36 60 M84 20 L106 40 L84 60 M68 12 L52 68" {...common} />
+          <path d="M50 62 V16 L92 8 V54" {...common} />
+          <path d="M50 22 L92 14" {...common} />
+          <ellipse cx="41" cy="63" rx="10" ry="7.5" transform="rotate(-20 41 63)" fill={ink} />
+          <ellipse cx="83" cy="55" rx="10" ry="7.5" transform="rotate(-20 83 55)" fill={ink} />
         </svg>
       );
     case "play":

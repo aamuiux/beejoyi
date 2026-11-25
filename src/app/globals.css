@@ -15,8 +15,8 @@
   --color-alert: #c8133f;
   --color-leaf: #1f8a5b;
 
-  --font-display: var(--font-anek), "Hind Siliguri", system-ui, sans-serif;
-  --font-sans: var(--font-hind), system-ui, sans-serif;
+  --font-display: var(--font-anek), system-ui, sans-serif;
+  --font-sans: var(--font-anek), system-ui, sans-serif;
 }
 
 html {
@@ -27,6 +27,8 @@ body {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  /* Anek's regular weight is light for long Bangla text on low-DPI phones; 450 reads crisper. */
+  font-weight: 450;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }

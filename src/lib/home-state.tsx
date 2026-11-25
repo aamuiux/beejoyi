@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { AgeKey, CatKey, L, Lang } from "./content";
+import { ages, type AgeKey, type CatKey, type L, type Lang } from "./content";
 
 type HomeState = {
   lang: Lang;
@@ -29,7 +29,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     const a = localStorage.getItem("bj-age");
     // eslint-disable-next-line react-hooks/set-state-in-effect -- restoring persisted prefs after hydration
     if (l === "en" || l === "bn") setLangState(l);
-    if (a) setAgeState(a as AgeKey);
+    // Only restore ages that still exist (e.g. "uni" was removed).
+    if (a && ages.some((x) => x.key === a)) setAgeState(a as AgeKey);
   }, []);
 
   useEffect(() => {

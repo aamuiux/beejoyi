@@ -12,7 +12,7 @@ import {
   contests,
   num,
   statusOf,
-  subjectGuides,
+  formatGuides,
   submit as s,
   t,
   uploadRules,
@@ -61,8 +61,8 @@ const accepts = (accept: string, type: string) =>
 export function SubmitEntry({ id }: { id: string }) {
   const { tr, lang } = useHome();
   const c = contests.find((x) => x.id === id)!;
-  const rule = uploadRules[c.cat];
-  const guide = subjectGuides[c.cat];
+  const rule = uploadRules[c.format];
+  const guide = formatGuides[c.format];
   const eligible = childProfiles.filter((p) => c.ages.includes(p.age));
 
   const [draft, setDraft] = useState<Draft>({
@@ -253,10 +253,11 @@ export function SubmitEntry({ id }: { id: string }) {
       </Shell>
     );
   }
-  if (rule.kind === "none") {
+  if (c.format === "quiz" || c.format === "debate") {
+    const n = s.noUpload[c.format];
     return (
       <Shell c={c}>
-        <Notice title={tr(s.sportsTitle)} body={tr(s.sportsBody)} />
+        <Notice title={tr(n.title)} body={tr(n.body)} />
       </Shell>
     );
   }
@@ -730,8 +731,9 @@ function Uploader({
       : kind === "media"
         ? [
             {
-              label: `${tr(s.video)} / ${tr(s.audio)}`,
-              icon: "🎬",
+              // Name the one thing this contest takes (video or audio).
+              label: accept.startsWith("audio") ? tr(s.audio) : tr(s.video),
+              icon: accept.startsWith("audio") ? "🎙️" : "🎬",
               input: "picker" as const,
             },
           ]
