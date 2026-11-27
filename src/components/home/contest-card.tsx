@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { JoinDialog, joinLabel } from "@/components/contests/join-dialog";
-import { FormatIcon, HandshakeIcon, TrophyIcon } from "@/components/icons";
-import { ages, detail, formats, num, statusOf, t, type Contest } from "@/lib/content";
+import { HandshakeIcon, TrophyIcon } from "@/components/icons";
+import { detail, num, statusOf, t, type Contest } from "@/lib/content";
 import { useHome } from "@/lib/home-state";
 import { PosterArt } from "./poster-art";
 
@@ -14,7 +14,6 @@ export function ContestCard({ c }: { c: Contest }) {
   const [reminded, setReminded] = useState(false);
   const [joinOpen, setJoinOpen] = useState(false);
   const urgent = status === "open" && c.daysLeft <= 2;
-  const ageLabel = c.ages.map((a) => ages.find((x) => x.key === a)!.label[lang]).join(", ");
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white transition-colors hover:border-indigo">
@@ -23,29 +22,22 @@ export function ContestCard({ c }: { c: Contest }) {
         style={{ background: c.poster.bg }}
       >
         <PosterArt shape={c.poster.shape} ink={c.poster.ink} />
-        <span className="absolute top-3 left-3 max-w-[70%] truncate rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-semibold text-ink">
-          {ageLabel}
-        </span>
-        <span
-          className={`absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-xs font-bold ${
-            c.fee === 0 ? "bg-honey text-ink" : "bg-ink text-white"
-          }`}
-        >
-          {c.fee === 0 ? tr(t.contests.free) : `৳${num(c.fee, lang)}`}
-        </span>
-        {/* How you take part, so nobody joins a video contest expecting a quiz */}
-        <span className="absolute bottom-3 left-3 flex flex-wrap gap-1.5">
-          <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-semibold text-ink">
-            <FormatIcon format={c.format} className="size-3.5" />
-            {tr(formats[c.format].label)}
+        {/* The fee only matters while you can still join; a finished contest drops it */}
+        {status !== "ended" && (
+          <span
+            className={`absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-xs font-bold ${
+              c.fee === 0 ? "bg-honey text-ink" : "bg-ink text-white"
+            }`}
+          >
+            {c.fee === 0 ? tr(t.contests.free) : `৳${num(c.fee, lang)}`}
           </span>
-          {/* Multi-round contests say so up front: it's a journey, not a one-off upload */}
-          {c.round && (
-            <span className="rounded-full bg-indigo px-2.5 py-0.5 text-xs font-semibold text-white ring-2 ring-white/90">
-              {tr(detail.roundOf).replace("{now}", num(c.round.now, lang)).replace("{of}", num(c.round.of, lang))}
-            </span>
-          )}
-        </span>
+        )}
+        {/* Multi-round contests say so up front: it's a journey, not a one-off upload */}
+        {c.round && (
+          <span className="absolute bottom-3 left-3 rounded-full bg-indigo px-2.5 py-0.5 text-xs font-semibold text-white ring-2 ring-white/90">
+            {tr(detail.roundOf).replace("{now}", num(c.round.now, lang)).replace("{of}", num(c.round.of, lang))}
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4">
