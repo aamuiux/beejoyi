@@ -371,6 +371,7 @@ export const leaderboard = [
   { name: { bn: "নুসরাত", en: "Nusrat" }, cls: { bn: "এইচএসসি", en: "HSC" }, score: 16980 },
   { name: { bn: "রাফি", en: "Rafi" }, cls: { bn: "৩য় শ্রেণি", en: "Class 3" }, score: 15112 },
   { name: { bn: "মাহি", en: "Mahi" }, cls: { bn: "৯ম শ্রেণি", en: "Class 9" }, score: 14870 },
+  { name: { bn: "সাকিব", en: "Sakib" }, cls: { bn: "৭ম শ্রেণি", en: "Class 7" }, score: 14102 },
 ];
 
 export const t = {
@@ -469,20 +470,21 @@ export const t = {
     art: {
       uploaded: { bn: "আপলোড হয়েছে", en: "Uploaded" },
       join: { bn: "যোগ দাও", en: "Join" },
-      certificate: { bn: "স্কিল স্কোরকার্ড", en: "Skill Scorecard" },
+      certificate: { bn: "সার্টিফিকেট", en: "Certificate" },
       name: { bn: "আয়েশা", en: "Ayesha" },
     },
     steps: [
       { t: { bn: "যোগ দাও, শিখে নাও", en: "Join and learn" }, d: { bn: "ফোন নম্বর দিয়েই যোগ দাও। শুরুর আগে ৩ মিনিটের একটা শেখার কার্ড, ফাঁকা পাতার ভয় নেই।", en: "Join with just your phone number. A 3-minute learning card comes first, so you never face a blank page." } },
       { t: { bn: "জমা দাও, ফিডব্যাক নাও", en: "Submit, get feedback" }, d: { bn: "ফোন থেকেই আপলোড করো। বিচারকরা প্রতিটি দিকে ১–৭ নম্বর আর মন্তব্য দেবেন, তুমি আরো ভালো করবে।", en: "Upload from your phone. Judges score each criterion 1–7 with comments, so you can improve." } },
-      { t: { bn: "স্কোরকার্ড নাও", en: "Earn your scorecard" }, d: { bn: "যে শেষ করে, সে-ই পায় যাচাইযোগ্য স্কিল স্কোরকার্ড। জিতলে পুরস্কারও।", en: "Everyone who finishes gets a verified Skill Scorecard. Winners get prizes too." } },
+      { t: { bn: "সার্টিফিকেট আর স্কোরকার্ড নাও", en: "Earn a certificate and scorecard" }, d: { bn: "যে শেষ করে, সে-ই পায় সার্টিফিকেট আর যাচাইযোগ্য স্কিল স্কোরকার্ড। জিতলে পুরস্কারও।", en: "Everyone who finishes gets a certificate and a verified Skill Scorecard. Winners get prizes too." } },
     ],
   },
   games: {
     title: { bn: "একটু খেলে নাও", en: "Take a game break" },
     sub: { bn: "সাইন-আপ ছাড়াই খেলো। স্কোর সেভ করতে চাইলে তবেই অ্যাকাউন্ট।", en: "Play without signing up. Create an account only if you want to save your score." },
     play: { bn: "খেলো", en: "Play" },
-    board: { bn: "এই সপ্তাহের সেরা", en: "This week's top players" },
+    board: { bn: "এই সপ্তাহের সেরা ৬", en: "This week's top 6" },
+    all: { bn: "সব গেম দেখো", en: "See all games" },
     resets: { bn: "প্রতি শনিবার নতুন করে শুরু", en: "Resets every Saturday" },
     list: [
       { key: "2048", name: { bn: "২০৪৮", en: "2048" }, d: { bn: "সংখ্যা মিলাও, ২০৪৮ বানাও", en: "Merge numbers to reach 2048" } },
@@ -503,7 +505,17 @@ export const t = {
   },
   parents: {
     title: { bn: "বাবা-মায়ের জন্য", en: "For parents" },
-    sub: { bn: "আপনার সন্তান নিরাপদে অংশ নেবে, এটা আমাদের প্রথম দায়িত্ব।", en: "Your child's safety comes first." },
+    sub: { bn: "আপনার সন্তান নিরাপদে অংশ নেবে, এটা আমাদের প্রথম দায়িত্ব। সব কিছু থাকে আপনার নিয়ন্ত্রণে।", en: "Your child's safety comes first, and everything stays in your control." },
+    cta: { bn: "অভিভাবক হিসেবে সাইন আপ", en: "Sign up as a parent" },
+    faq: { bn: "অভিভাবকদের প্রশ্ন", en: "Questions from parents" },
+    mock: {
+      title: { bn: "আপনার অ্যাকাউন্ট (নমুনা)", en: "Your account (sample)" },
+      kids: [
+        { name: { bn: "আয়েশা", en: "Ayesha" }, cls: { bn: "২য় শ্রেণি", en: "Class 2" }, status: { bn: "জমা হয়েছে", en: "Submitted" }, done: true },
+        { name: { bn: "রাফি", en: "Rafi" }, cls: { bn: "প্রি-স্কুল", en: "Preschool" }, status: { bn: "জমা বাকি · ২ দিন", en: "To submit · 2 days" }, done: false },
+      ],
+      private: { bn: "ফোন, ঠিকানা আর স্কুলের তথ্য শুধু আপনি দেখেন।", en: "Only you see phone, address and school details." },
+    },
     points: [
       { t: { bn: "প্রোফাইল আপনার হাতে", en: "You control the profile" }, d: { bn: "ছোটদের অ্যাকাউন্ট খোলেন ও চালান বাবা-মা। এক অ্যাকাউন্টে একাধিক সন্তান।", en: "Parents create and manage accounts for younger children, with several children under one login." } },
       { t: { bn: "শুধু যাচাই করা আয়োজক", en: "Only verified organisers" }, d: { bn: "প্রতিটি স্কুল, ক্লাব ও ব্র্যান্ড অনুমোদনের পরেই কনটেস্ট চালাতে পারে।", en: "Every school, club and brand is approved before it can run a contest." } },

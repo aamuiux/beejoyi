@@ -19,9 +19,9 @@ export default function Home() {
       <TrustStrip />
       <ContestsSection />
       <HowItWorks />
+      <ParentsSection />
       <GamesSection />
       <ShowcaseSection />
-      <ParentsSection />
       <B2BBand />
       <FaqSection />
       <FinalCta />

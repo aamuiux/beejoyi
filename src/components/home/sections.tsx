@@ -4,6 +4,7 @@ import { Accordion } from "@base-ui/react/accordion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { leaderboard, num, t } from "@/lib/content";
+import { CheckIcon, ClockIcon, LockIcon } from "@/components/icons";
 import { useHome } from "@/lib/home-state";
 import { LangToggle, Logo } from "./site-header";
 import { CertificateArt, JoinArt, SubmitArt } from "./step-art";
@@ -44,24 +45,54 @@ export function HowItWorks() {
     <section className="bg-indigo-wash py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <h2 className="display text-4xl font-bold sm:text-5xl">{tr(t.how.title)}</h2>
-        <ol className="mt-10 grid gap-6 md:grid-cols-3">
+        <ol className="mt-14 grid gap-16 md:grid-cols-3 md:gap-12">
           {t.how.steps.map((s, i) => (
-            <li key={i} className="overflow-hidden rounded-3xl bg-white">
-              <div className="relative aspect-[16/10] p-4 sm:p-6 md:aspect-[4/3]" style={{ backgroundColor: panels[i] }}>
-                {art[i]}
-                <span className="display absolute top-4 left-4 grid size-12 place-items-center rounded-full bg-indigo text-xl font-bold text-white shadow-[0_6px_16px_-6px_rgba(36,34,110,0.6)]">
-                  {num(i + 1, lang)}
-                </span>
-              </div>
-              <div className="p-5 sm:p-6">
-                <h3 className="font-display text-2xl font-semibold">{tr(s.t)}</h3>
-                <p className="mt-1.5 text-ink-soft">{tr(s.d)}</p>
+            <li key={i} className="relative">
+              {/* A hand-drawn curve leads to the next step: above the cards on desktop, down the side on phones */}
+              {i < t.how.steps.length - 1 && <StepLink />}
+              <div className="relative z-10 h-full overflow-hidden rounded-3xl bg-white">
+                <div className="relative aspect-[16/10] p-4 sm:p-6 md:aspect-[4/3]" style={{ backgroundColor: panels[i] }}>
+                  {art[i]}
+                  <span className="display absolute top-4 left-4 grid size-12 place-items-center rounded-full bg-indigo text-xl font-bold text-white shadow-[0_6px_16px_-6px_rgba(36,34,110,0.6)]">
+                    {num(i + 1, lang)}
+                  </span>
+                </div>
+                <div className="p-5 sm:p-6">
+                  <h3 className="font-display text-2xl font-semibold">{tr(s.t)}</h3>
+                  <p className="mt-1.5 text-ink-soft">{tr(s.d)}</p>
+                </div>
               </div>
             </li>
           ))}
         </ol>
       </div>
     </section>
+  );
+}
+
+/** The dotted, hand-drawn arrow from one step to the next. */
+function StepLink() {
+  const line = {
+    fill: "none",
+    stroke: "#6563F1",
+    strokeWidth: 4,
+    strokeLinecap: "round" as const,
+    strokeDasharray: "0.5 10",
+  };
+  const head = { fill: "none", stroke: "#6563F1", strokeWidth: 4, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  return (
+    <>
+      {/* desktop: arcs over the gap, from this card's top to the next card's number */}
+      <svg aria-hidden viewBox="0 0 160 70" className="pointer-events-none absolute -top-14 -right-28 z-20 hidden w-48 md:block">
+        <path d="M10 54 C 34 2, 120 -6, 145 54" {...line} />
+        <path d="M133 46 L145 58 L154 44" {...head} />
+      </svg>
+      {/* phones: an S-curve down the side, into the next card */}
+      <svg aria-hidden viewBox="0 0 60 80" className="pointer-events-none absolute -bottom-16 left-1/2 z-20 h-20 w-16 -translate-x-1/2 md:hidden">
+        <path d="M30 4 C 6 24, 54 46, 30 70" {...line} />
+        <path d="M21 62 L30 72 L39 62" {...head} />
+      </svg>
+    </>
   );
 }
 
@@ -114,7 +145,7 @@ function GameArt({ k }: { k: string }) {
       </div>
     );
   return (
-    <div className="flex items-center justify-center gap-1 text-2xl sm:gap-3 sm:text-4xl" aria-hidden>
+    <div className="flex items-center justify-center gap-1 text-2xl sm:gap-2 sm:text-3xl" aria-hidden>
       <span className="-rotate-12">✊</span>
       <span>✋</span>
       <span className="rotate-12">✌️</span>
@@ -128,8 +159,18 @@ export function GamesSection() {
     <section id="games" className="scroll-mt-20 py-16 sm:py-20">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_20rem]">
         <div>
-          <h2 className="display text-4xl font-bold sm:text-5xl">{tr(t.games.title)}</h2>
-          <p className="mt-2 max-w-xl text-ink-soft">{tr(t.games.sub)}</p>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="display text-4xl font-bold sm:text-5xl">{tr(t.games.title)}</h2>
+              <p className="mt-2 max-w-xl text-ink-soft">{tr(t.games.sub)}</p>
+            </div>
+            <Link
+              href="/games"
+              className="inline-flex min-h-12 items-center rounded-full border-2 border-indigo px-6 font-semibold text-indigo-ink hover:bg-indigo-wash"
+            >
+              {tr(t.games.all)}
+            </Link>
+          </div>
           <ul className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
             {t.games.list.map((g) => (
               <li key={g.key}>
@@ -254,25 +295,66 @@ const parentIcons = [
 
 export function ParentsSection() {
   const { tr } = useHome();
+  const m = t.parents.mock;
   return (
-    <section id="parents" className="py-16 sm:py-20">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_2fr]">
+    <section id="parents" aria-labelledby="parents-title" className="scroll-mt-20 bg-[#E3F2E9] py-16 sm:py-24">
+      <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[1fr_1.15fr] lg:items-center">
         <div>
-          <h2 className="display text-4xl font-bold sm:text-5xl">{tr(t.parents.title)}</h2>
-          <p className="mt-3 max-w-sm text-lg text-ink-soft">{tr(t.parents.sub)}</p>
+          <h2 id="parents-title" className="display text-5xl font-bold sm:text-6xl">
+            {tr(t.parents.title)}
+          </h2>
+          <p className="mt-4 max-w-md text-xl text-ink/80">{tr(t.parents.sub)}</p>
+
+          {/* What a parent actually sees: their children, each with a status */}
+          <div className="mt-8 max-w-md rounded-3xl bg-white p-5 shadow-[0_20px_40px_-24px_rgba(31,90,62,0.45)]">
+            <p className="text-sm font-semibold text-ink-soft">{tr(m.title)}</p>
+            <ul className="mt-3 divide-y divide-line">
+              {m.kids.map((k, i) => (
+                <li key={i} className="flex items-center gap-3 py-3">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-leaf/15 font-bold text-leaf-ink">
+                    {tr(k.name).slice(0, 1)}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold">{tr(k.name)}</span>
+                    <span className="block text-sm text-ink-soft">{tr(k.cls)}</span>
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-semibold ${
+                      k.done ? "bg-leaf/10 text-leaf-ink" : "bg-alert/10 text-alert"
+                    }`}
+                  >
+                    {k.done ? <CheckIcon className="size-3.5" /> : <ClockIcon className="size-3.5" />}
+                    {tr(k.status)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 flex items-start gap-2 border-t border-line pt-3 text-sm text-ink-soft">
+              <LockIcon className="mt-0.5 size-4 shrink-0 text-leaf-ink" />
+              {tr(m.private)}
+            </p>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <a href="#signup" className="inline-flex min-h-13 items-center rounded-full bg-leaf-ink px-7 text-lg font-semibold text-white hover:bg-[#10543a]">
+              {tr(t.parents.cta)}
+            </a>
+            <a href="#faq" className="min-h-11 content-center font-semibold text-leaf-ink underline underline-offset-4">
+              {tr(t.parents.faq)}
+            </a>
+          </div>
         </div>
-        <ul className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+
+        <ul className="grid gap-4 sm:grid-cols-2">
           {t.parents.points.map((p, i) => (
-            <li key={i} className="flex gap-4">
-              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-leaf/10 text-leaf-ink">
-                <svg viewBox="0 0 24 24" className="size-6" aria-hidden>
+            <li key={i} className="rounded-3xl bg-white p-6">
+              <span className="grid size-14 place-items-center rounded-2xl bg-leaf/10 text-leaf-ink">
+                <svg viewBox="0 0 24 24" className="size-7" aria-hidden>
                   <path d={parentIcons[i]} stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
-              <div>
-                <h3 className="font-display text-xl font-semibold">{tr(p.t)}</h3>
-                <p className="mt-1 text-ink-soft">{tr(p.d)}</p>
-              </div>
+              <h3 className="mt-4 font-display text-xl font-semibold">{tr(p.t)}</h3>
+              <p className="mt-1.5 text-ink-soft">{tr(p.d)}</p>
             </li>
           ))}
         </ul>
@@ -340,7 +422,7 @@ export function B2BBand() {
 export function FaqSection() {
   const { tr } = useHome();
   return (
-    <section className="py-16 sm:py-20">
+    <section id="faq" className="scroll-mt-20 py-16 sm:py-20">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_2fr]">
         <h2 className="display text-4xl font-bold sm:text-5xl">{tr(t.faq.title)}</h2>
         <Accordion.Root className="divide-y divide-line border-y border-line">
