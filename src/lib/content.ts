@@ -84,7 +84,7 @@ export const contests: Contest[] = [
     joined: 1284,
     daysLeft: 2,
     beginner: true,
-    poster: { bg: "#FFB59E", ink: "#7A2E14", shape: "sun" },
+    poster: { bg: "#FFC329", ink: "#1E1E2E", shape: "sun" },
   },
   {
     id: "c2",
@@ -239,7 +239,7 @@ export const contests: Contest[] = [
     joined: 412,
     daysLeft: 14,
     beginner: true,
-    poster: { bg: "#DCDBFD", ink: "#24226E", shape: "mic" },
+    poster: { bg: "#FFC329", ink: "#1E1E2E", shape: "mic" },
   },
   {
     id: "c12",
@@ -401,48 +401,6 @@ export const t = {
     searchBtn: { bn: "কনটেস্ট খোঁজো", en: "Find contests" },
     iam: { bn: "কার জন্য:", en: "For:" },
   },
-  /** The homepage stage: a contest is a show in rounds, judged in the open. */
-  stage: {
-    title: { bn: "মঞ্চ তোমার। বিচার খোলা।", en: "Your stage. Judged in the open." },
-    sub: {
-      bn: "প্রতিটি কনটেস্ট রাউন্ডে রাউন্ডে: আগে শেখো, তারপর জমা দাও, প্রতিটি দিকে ১–৭ নম্বর আর মন্তব্য নাও, আরো ভালো করো।",
-      en: "Every contest runs in rounds: learn first, submit, get a 1–7 score and comments on each criterion, then improve.",
-    },
-    entryLabel: { bn: "আয়েশার আঁকা, ২য় শ্রেণি (নমুনা)", en: "Ayesha's drawing, Class 2 (sample)" },
-    paddlesLabel: { bn: "বিচারকদের নম্বর। একটা চাপো, দেখো ৭ পেতে কী লাগে।", en: "The judges' scores. Tap one to see what earns a 7." },
-    paddles: [
-      { name: { bn: "সৃজনশীলতা", en: "Creativity" }, score: 5, short: { bn: "নতুন ভাবনা", en: "a new idea" }, top: { bn: "এমন ভাবনা, যা আর কেউ দেখায়নি।", en: "An idea nobody else showed." } },
-      { name: { bn: "বিষয়ের মিল", en: "Fits the theme" }, score: 6, short: { bn: "এক দেখাতেই বোঝা যায়", en: "clear at a glance" }, top: { bn: "বিষয়টা এক দেখাতেই বোঝা যায়।", en: "The theme is clear at a glance." } },
-      { name: { bn: "রঙ ও যত্ন", en: "Colour & care" }, score: 7, short: { bn: "প্রতিটি রেখায় যত্ন", en: "care in every line" }, top: { bn: "প্রতিটি রেখা আর রঙ যত্ন করে বসানো।", en: "Every line and colour placed with care." } },
-    ],
-    sevenMeans: { bn: "৭ পেতে হলে:", en: "What earns a 7:" },
-    sevenShort: { bn: "৭ মানে", en: "7 means" },
-    sample: { bn: "নমুনা", en: "sample" },
-    verified: { bn: "যাচাই করা", en: "Verified" },
-    rounds: [
-      { bn: "রাউন্ড ১ · শেখো", en: "Round 1 · Learn" },
-      { bn: "রাউন্ড ২ · ফিডব্যাক", en: "Round 2 · Feedback" },
-      { bn: "চূড়ান্ত", en: "Finale" },
-    ],
-    roundsLabel: { bn: "কনটেস্টের রাউন্ড", en: "Contest rounds" },
-    roundNow: { bn: "এখন রাউন্ড ২: নম্বর আর মন্তব্য দেখে কাজটা আরো ভালো করো। তারপর চূড়ান্ত পর্ব।", en: "Now in round 2: use the scores and comments to improve. Then the finale." },
-    podium: { bn: "তোমার বয়সের কনটেস্ট খোঁজো", en: "Find a contest for your age" },
-    find: { bn: "কনটেস্ট খোঁজো", en: "Find contests" },
-  },
-  judges: {
-    title: { bn: "বিচারকের টেবিল", en: "The judges' table" },
-    sub: { bn: "জেতা-হারার নিয়ম আগে থেকেই সবার সামনে। ভোট বা লাইকে কেউ জেতে না।", en: "The rules for winning are public before you start. Nobody wins on votes or likes." },
-    points: [
-      { t: { bn: "১–৭ নম্বর, প্রতিটি দিকে", en: "1–7 on every criterion" }, d: { bn: "শুধু একটা মোট নম্বর নয়; কোথায় ভালো, কোথায় আরো চেষ্টা দরকার, সব আলাদা করে।", en: "Not one total: you see where you're strong and where to push, criterion by criterion." } },
-      { t: { bn: "নাম না দেখে বিচার", en: "Judged without names" }, d: { bn: "বিচারকরা নাম, স্কুল বা জেলা দেখেন না। ঢাকা আর গ্রামের কাজ একই নিয়মে।", en: "Judges don't see names, schools or districts. Dhaka and village entries meet the same rubric." } },
-      { t: { bn: "সবার জন্য স্কোরকার্ড", en: "A scorecard for everyone" }, d: { bn: "যে শেষ করে, সে-ই পায় যাচাইযোগ্য স্কিল স্কোরকার্ড। কেউ খালি হাতে ফেরে না।", en: "Everyone who finishes gets a verified Skill Scorecard. Nobody leaves empty-handed." } },
-    ],
-  },
-  curtain: {
-    title: { bn: "পরের মঞ্চটা তোমার", en: "The next stage is yours" },
-    sub: { bn: "ফ্রি অ্যাকাউন্ট খোলো, প্রথম রাউন্ডের আগে শিখে নাও, তারপর মঞ্চে ওঠো।", en: "Create a free account, learn before round one, then take the stage." },
-    browse: { bn: "আগে কনটেস্ট দেখি", en: "Browse contests first" },
-  },
   trust: {
     note: { bn: "সংখ্যাগুলো যাচাইয়ের অপেক্ষায় (নমুনা)", en: "Numbers awaiting verification (sample)" },
     items: [
@@ -507,23 +465,7 @@ export const t = {
     tryOther: { bn: "অন্য ট্যাবে আছে", en: "Found in another tab" },
   },
   how: {
-    title: { bn: "তিন রাউন্ডের অনুষ্ঠান", en: "A show in three rounds" },
-    sub: { bn: "প্রতিটি রাউন্ডের আগে জানো পরেরটায় কী হবে।", en: "Before each round, you know what the next one holds." },
-    next: { bn: "এরপর", en: "Next" },
-    order: [
-      {
-        d: { bn: "সমস্যাটা পড়ো, ৩ মিনিটের শেখার কার্ড দেখো, তারপর প্রথম কাজ জমা দাও। ফাঁকা পাতা নয়, তিনটা সহজ প্রশ্ন।", en: "Read the problem, take the 3-minute learning card, then submit a first version. Not a blank page: three easy questions." },
-        next: { bn: "৫ দিনে প্রতিটি দিকে ১–৭ নম্বর আর বিচারকের মন্তব্য।", en: "Within 5 days: a 1–7 score and a judge's comment on each criterion." },
-      },
-      {
-        d: { bn: "নম্বর আর মন্তব্য দেখো, রেকর্ড করা মেন্টর ক্লিনিক দেখো, কাজটা ভালো করো আর লেখো কী বদলালে।", en: "Read your scores and comments, watch the recorded mentor clinic, improve your work and note what you changed." },
-        next: { bn: "সেরারা চূড়ান্ত পর্বে; কাজ আর ভাবনা পাশাপাশি।", en: "The best go to the finale, work and thinking side by side." },
-      },
-      {
-        d: { bn: "চূড়ান্ত কাজ জমা দাও। প্রয়োজনে অনলাইনে বিচারকদের সামনে উপস্থাপন।", en: "Submit your final work, and present it online to the judges if you're shortlisted." },
-        next: { bn: "যে শেষ করে, সে-ই পায় যাচাইযোগ্য স্কিল স্কোরকার্ড।", en: "Everyone who finishes gets a verified Skill Scorecard." },
-      },
-    ],
+    title: { bn: "কীভাবে কাজ করে", en: "How it works" },
     art: {
       uploaded: { bn: "আপলোড হয়েছে", en: "Uploaded" },
       join: { bn: "যোগ দাও", en: "Join" },
@@ -550,14 +492,13 @@ export const t = {
     ],
   },
   showcase: {
-    title: { bn: "বিজয়ীদের কাজ, আর পেছনের ভাবনা", en: "Winning work, and the thinking behind it" },
-    sub: { bn: "প্রতিটি বিজয়ী কাজের পাশে লেখা থাকে কী বদলেছে, কেন। (নমুনা; আসল কাজ অভিভাবকের অনুমতি নিয়ে দেখানো হবে)", en: "Every winning entry sits beside a note on what changed, and why. (Samples; real work shown with parent consent)" },
-    noteLabel: { bn: "কাজের পেছনের ভাবনা", en: "The thinking behind it" },
+    title: { bn: "বিজয়ীদের কাজ", en: "Winning entries" },
+    sub: { bn: "আগের কনটেস্টের সেরা কাজগুলো। (নমুনা; আসল কাজ অভিভাবকের অনুমতি নিয়ে দেখানো হবে)", en: "Top entries from past contests. (Samples; real work shown with parent consent)" },
     items: [
-      { who: { bn: "আয়েশা, ২য় শ্রেণি", en: "Ayesha, Class 2" }, note: { bn: "প্রথমে আকাশ ফাঁকা ছিল; মেন্টরের কথায় সূর্যটা কোণে সরিয়েছি।", en: "The sky was empty at first; after the mentor's tip I moved the sun to the corner." }, what: { bn: "চিত্রাঙ্কন: আমার প্রিয় গ্রাম", en: "Drawing: My favourite village" }, place: { bn: "প্রথম", en: "1st" } },
-      { who: { bn: "সামির, ৭ম শ্রেণি", en: "Samir, Class 7" }, note: { bn: "প্রথম পাম্পটা পানি তুলত না; প্যানেলটা হেলিয়ে আবার বানিয়েছি।", en: "My first pump lifted no water; I tilted the panel and rebuilt it." }, what: { bn: "বিজ্ঞান মেলা: সৌর পাম্প", en: "Science fair: Solar pump" }, place: { bn: "প্রথম", en: "1st" } },
-      { who: { bn: "ঋতু, এইচএসসি", en: "Ritu, HSC" }, note: { bn: "রাউন্ড ২-এর ফিডব্যাকে শেষটা নতুন করে লিখেছি।", en: "I rewrote the ending after round 2 feedback." }, what: { bn: "গল্প: নদীর ওপারে", en: "Story: Across the river" }, place: { bn: "দ্বিতীয়", en: "2nd" } },
-      { who: { bn: "তাহমিদ, প্রি-স্কুল", en: "Tahmid, Preschool" }, note: { bn: "আম্মু বলেছিল পাপড়ি গুনে দেখতে; বারোটা এঁকেছি।", en: "Mum told me to count the petals; I drew twelve." }, what: { bn: "রঙ করো: সূর্যমুখী", en: "Colouring: Sunflower" }, place: { bn: "বিশেষ পুরস্কার", en: "Special mention" } },
+      { who: { bn: "আয়েশা, ২য় শ্রেণি", en: "Ayesha, Class 2" }, what: { bn: "চিত্রাঙ্কন: আমার প্রিয় গ্রাম", en: "Drawing: My favourite village" }, place: { bn: "প্রথম", en: "1st" } },
+      { who: { bn: "সামির, ৭ম শ্রেণি", en: "Samir, Class 7" }, what: { bn: "বিজ্ঞান মেলা: সৌর পাম্প", en: "Science fair: Solar pump" }, place: { bn: "প্রথম", en: "1st" } },
+      { who: { bn: "ঋতু, এইচএসসি", en: "Ritu, HSC" }, what: { bn: "গল্প: নদীর ওপারে", en: "Story: Across the river" }, place: { bn: "দ্বিতীয়", en: "2nd" } },
+      { who: { bn: "তাহমিদ, প্রি-স্কুল", en: "Tahmid, Preschool" }, what: { bn: "রঙ করো: সূর্যমুখী", en: "Colouring: Sunflower" }, place: { bn: "বিশেষ পুরস্কার", en: "Special mention" } },
     ],
   },
   parents: {

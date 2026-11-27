@@ -50,6 +50,21 @@ body {
   letter-spacing: -0.01em;
 }
 
+/* Rotating verb in the hero */
+@keyframes verb-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.verb-in {
+  animation: verb-in 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
 /* Bangla vowel signs (kar, fola) sit above and below the line: give them ~20% more room */
 :lang(bn) .display {
   line-height: 1.25;
@@ -62,8 +77,8 @@ dd {
 }
 
 ::selection {
-  background: var(--color-indigo-wash);
-  color: var(--color-indigo-ink);
+  background: var(--color-honey);
+  color: var(--color-ink);
 }
 
 input,
@@ -74,71 +89,6 @@ textarea {
 ::placeholder {
   color: var(--color-ink-soft);
   opacity: 1;
-}
-
-/* ---------- The stage (homepage world) ---------- */
-
-/* Pleated indigo curtain: folds of light and shadow, fading into the stage floor */
-.curtain {
-  background-color: var(--color-indigo);
-  background-image:
-    linear-gradient(to bottom, rgb(24 31 56 / 0.55), transparent 22%, transparent 58%, var(--color-navy) 100%),
-    repeating-linear-gradient(
-      90deg,
-      #3d3bb0 0,
-      var(--color-indigo) 2.2rem,
-      #7c7af5 3.1rem,
-      var(--color-indigo) 4rem,
-      #4846d2 5.6rem,
-      #3d3bb0 6.4rem
-    );
-}
-
-/* The one spotlight: a warm-white cone from above that lights (screen blend, never tints)
-   the entry, with a soft pool where it meets the floor */
-.spotlight {
-  background:
-    radial-gradient(ellipse 34% 7% at 50% 96%, rgb(255 236 190 / 0.55), transparent 100%),
-    linear-gradient(to bottom, rgb(255 246 222 / 0.05), rgb(255 238 200 / 0.3) 38%, rgb(255 224 150 / 0.22) 70%, rgb(255 214 120 / 0.06) 96%, transparent);
-  clip-path: polygon(44% 0, 56% 0, 86% 100%, 14% 100%);
-  mix-blend-mode: screen;
-}
-
-/* Stage floor: night navy boards under a lit horizon line */
-.stage-floor {
-  background:
-    linear-gradient(to bottom, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0.22) 2px, transparent 2px),
-    repeating-linear-gradient(90deg, transparent 0 7rem, rgb(255 255 255 / 0.04) 7rem calc(7rem + 1px)),
-    linear-gradient(to bottom, #232a4a, var(--color-navy) 70%);
-}
-
-/* One authored sequence: paddles rise in turn, then the seal stamps the entry */
-/* Both start fully visible (a still frame is never missing anything); only transform moves */
-@keyframes paddle-rise {
-  from {
-    transform: translateY(1.25rem);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-@keyframes seal-stamp {
-  0% {
-    transform: scale(1.35) rotate(-22deg);
-  }
-  65% {
-    transform: scale(0.95) rotate(-12deg);
-  }
-  100% {
-    transform: scale(1) rotate(-12deg);
-  }
-}
-.paddle-rise {
-  animation: paddle-rise 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.seal-stamp {
-  transform: rotate(-12deg);
-  animation: seal-stamp 460ms cubic-bezier(0.16, 1, 0.3, 1) 0.9s both;
 }
 
 .no-scrollbar {
@@ -152,8 +102,7 @@ textarea {
   html {
     scroll-behavior: auto;
   }
-  .paddle-rise,
-  .seal-stamp {
+  .verb-in {
     animation: none;
   }
 }

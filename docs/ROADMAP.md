@@ -27,13 +27,6 @@ Since then (26 Nov 2026):
   - Free contests name their CSR sponsor.
   - Emoji icons are replaced with drawn SVG icons.
 
-**Homepage redesign: "The Debate Stage"** (26 Nov 2026). The direction was chosen on Impeccable's decision page, and the finish review's verdict is ship.
-- **The idea:** a contest is a show in rounds, judged in the open.
-- **The hero:** an indigo curtain and one spotlight on a student's entry. Three judges' 1–7 paddles flip to show what earns a 7, and the round strip sits on the stage floor. The podium holds the action: age chips, search and "কনটেস্ট খোঁজো".
-- **Further down the page:** a printed running order of the three rounds, the judges' table with a sample scorecard, winners with their process notes, and a curtain call to close.
-- **Where it's recorded:** the visual system is in [../DESIGN.md](../DESIGN.md), and the homepage's direction contract is in `.impeccable/surfaces/src-app-page-tsx.md`.
-- **Next design step:** carry the stage world to `/contests`, `/contests/[id]` and the submit page, which still use the earlier look. Replace the drawn entry and showcase art with real or generated student work.
-
 ## Next, in this order ⏭️
 
 Each step closes a loop the previous pages already point to. Placeholder buttons in the prototype mark where they connect.
